@@ -1,0 +1,20 @@
+lang -> expr+
+expr -> declaring_expr | assign_expr | if_expr | while_expr | do_while_expr
+declaring_expr -> VAR_TYPE VAR (ASSIGN_OP arithmetic_expr)? SEP
+assign_expr -> VAR ASSIGN_OP arithmetic_expr SEP
+arithmetic_expr -> (value | L_BR arithmetic_expr R_BR) (OP arithmetic_expr)*
+value -> NUMBER | VAR
+if_expr -> if_head if_body (else_head else_body)?
+if_head -> IF_KW condition
+condition -> L_BR logical_expression R_RB
+logical_expression -> value (LOGICAL_OP value)*
+if_body -> L_S_BR expr+ R_S_BR
+else_head -> ELSE_KW (if_head)?
+else_body -> L_S_BR expr+ R_S_BR
+while_expr -> while_head while_body
+while_head -> WHILE_KW condition
+while_body -> L_S_BR expr+ R_S_BR
+do_while_expr -> DO_KW while_body while_head SEP
+
+----------------------------------------------
+assign_expr -> VAR ASSIGN_OP value (OP value)* SEP
