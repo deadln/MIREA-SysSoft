@@ -17,7 +17,7 @@ public class Lexer {
         // Регулярные выражения токенов
         tokenPatterns = new HashMap<>();
         tokenPatterns.put("^([a-zA-Z_]{1}[a-zA-Z_0-9]{0,})$|^([а-яА-Я_]{1}[а-яА-Я_0-9]{0,})$", "VAR");
-        tokenPatterns.put("^\\+$|^-$|^\\*$|^/$", "OP");
+        tokenPatterns.put("^\\+$|^-$|^\\*$|^/$|^#$", "OP");
         tokenPatterns.put("^\\==$|^>$|^>=$|^<$|^<=$", "LOGICAL_OP");
         tokenPatterns.put("^=$", "ASSIGN_OP");
         tokenPatterns.put("^0|[1-9&&[^\s]][0-9&&[^\s]]*$", "NUMBER");
@@ -32,7 +32,7 @@ public class Lexer {
         tokenPatterns.put("^\\{$", "L_S_BR");
         tokenPatterns.put("^\\}$", "R_S_BR");
         tokenPatterns.put("^;$", "SEP");
-        tokenPatterns.put("^целый$|^плавающий$|^срока$|^символъ$|^суть$", "VAR_TYPE");
+        tokenPatterns.put("^целый$|^плавающий$|^срока$|^символъ$|^суть$|^испис$|^замет$", "VAR_TYPE");
         // Приоритеты токенов
         tokenPriorities = new HashMap<>();
         tokenPriorities.put("WS", 0);
