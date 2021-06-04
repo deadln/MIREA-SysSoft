@@ -45,10 +45,10 @@ public class Lexer {
 
     }
 
-    public static void main(String[] args) {
+    public static ArrayList<Pair<String, String>> getTokensList(String string) {
         initTokenMaps();
 
-        // Чтение файла с исходным кодом
+        /*// Чтение файла с исходным кодом
         StringBuilder sb = new StringBuilder();
         try(FileReader reader = new FileReader("input.txt"))
         {
@@ -63,7 +63,7 @@ public class Lexer {
         }
 
         String string = sb.toString();
-        string = string.replaceAll("\\s+"," ");
+        string = string.replaceAll("\\s+"," ");*/
         //string = string.replaceAll("\t","");
 
         ArrayList<Pair<String, String>> tokens = new ArrayList<>();
@@ -135,8 +135,9 @@ public class Lexer {
             System.out.println("+TOKEN: " + accum);
             tokens.add(new Pair<String, String>(prevTokens.get(0), accum.toString()));
         }
+        return tokens;
 
-        try(FileWriter writer = new FileWriter("output.txt"))
+        /*try(FileWriter writer = new FileWriter("output.txt"))
         {
             for (var token:
                     tokens) {
@@ -148,6 +149,6 @@ public class Lexer {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }
