@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RPN {
-    static ArrayList<Pair<String, String>> tokens;
+    //static ArrayList<Pair<String, String>> tokens;
     static HashMap<String, Integer> opPriority;
 
     static void initOperatorPriorities()
@@ -82,30 +82,11 @@ public class RPN {
         return rpn;
     }
 
-    public static void main(String[] args) {
-        tokens = new ArrayList<>();
+    public static ArrayList<Pair<String, String>> getRPN(ArrayList<Pair<String, String>> tokens) {
         ArrayList<Pair<String, String>> rpn = new ArrayList<>();
-        ArrayList<Pair<String, String>> sub_rpn;
 
 
         initOperatorPriorities();
-        StringBuilder sb = new StringBuilder();
-        try (FileReader reader = new FileReader("output.txt")) {
-            int c;
-            while ((c = reader.read()) != -1) {
-                sb.append((char) c);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String[] string = sb.toString().split("\\n");
-        for (int i = 0; i < string.length; i += 2) {
-            if (!string[i].equals("WS"))
-                tokens.add(new Pair<>(string[i], string[i + 1]));
-        }
         System.out.println("Original expressions");
         System.out.println(tokens.toString());
         int i = 0, j, start, end;
@@ -230,17 +211,6 @@ public class RPN {
         System.out.println("Reverse polish notation:");
         System.out.println(rpn.toString());
         System.out.println(rpn.size());
-        try(FileWriter writer = new FileWriter("rpn.txt"))
-        {
-            for (var tok:
-                    rpn) {
-                writer.write(tok.getFirst() + "\n" + tok.getSecond() + "\n");
-            }
-            writer.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return rpn;
     }
 }

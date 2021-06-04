@@ -9,27 +9,8 @@ import java.util.ArrayList;
 public class Parser {
     static ArrayList<Pair<String, String>> tokens;
 
-    public static void main(String[] args) {
-        tokens = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
-        try(FileReader reader = new FileReader("output.txt"))
-        {
-            int c;
-            while((c = reader.read()) != -1) {
-                sb.append((char) c);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String[] string = sb.toString().split("\\n");
-        for(int i = 0; i < string.length; i += 2)
-        {
-            if(!string[i].equals("WS"))
-                tokens.add(new Pair<>(string[i], string[i + 1]));
-        }
+    public static ArrayList<Pair<String, String>> getRPN(ArrayList<Pair<String, String>> tokens_list) {
+        tokens = new ArrayList<>(tokens_list);
 
         try {
             LexTree tree = lang();
@@ -37,18 +18,17 @@ public class Parser {
             System.out.println("TREE");
             System.out.println("--------------------------------");
             tree.showTree();
+            return RPN.getRPN(tokens_list);
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            System.exit(1);
+            return null;
         }
 
     }
 
     public static LexTree lang()
     {
-        System.out.println("lang");
         LexTree tree = new LexTree(new Pair("lang", ""));
         ArrayList<Pair<String, String>> buffer = new ArrayList<>();
         LexNode expression;
@@ -116,7 +96,6 @@ public class Parser {
 
     public static LexNode expr(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println("expr");
         LexNode expression, parent = new LexNode(new Pair<>("expr", ""));
         expression = declaring_expr(tokens_list);
         if(expression != null)
@@ -153,8 +132,6 @@ public class Parser {
 
     public static LexNode declaring_expr(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println("declaring_expr");
-        System.out.println(tokens_list);
         if(tokens_list.size() < 3 || !tokens_list.get(0).getFirst().equals("VAR_TYPE") || !tokens_list.get(1).getFirst().equals("VAR") ||
                 !tokens_list.get(tokens_list.size() - 1).getFirst().equals("SEP"))
             return null;
@@ -175,7 +152,6 @@ public class Parser {
 
     public static LexNode assign_expr(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println("assign_expr");
         if(tokens_list.size() < 4 || !tokens_list.get(0).getFirst().equals("VAR") || !tokens_list.get(1).getFirst().equals("ASSIGN_OP") ||
                 !tokens_list.get(tokens_list.size() - 1).getFirst().equals("SEP"))
             return null;
@@ -192,8 +168,6 @@ public class Parser {
 
     public static LexNode arithmetic_expr(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println("arithmetic_expr");
-        System.out.println(tokens_list);
         LexNode res = new LexNode(new Pair<>("arithmetic_expr", ""));
         LexNode expression = value(tokens_list.get(0));
         Integer rightBracket = 0;
@@ -232,8 +206,6 @@ public class Parser {
 
     public static LexNode if_expr(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println("if_expr");
-        System.out.println(tokens_list);
         LexNode res = new LexNode(new Pair<>("if_expr", ""));
         Integer rightBracket = 0, rightCurlyBracket = 0;
         LexNode expression;
@@ -278,8 +250,6 @@ public class Parser {
 
     public static LexNode if_head(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println("if_head");
-        System.out.println(tokens_list);
         LexNode res = new LexNode(new Pair<>("if_head", ""));
         Integer rightBracket = 0;
         LexNode expression;
@@ -299,7 +269,6 @@ public class Parser {
 
     public static LexNode if_body(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println("if_body");
         LexNode res = new LexNode(new Pair<>("if_body", ""));
         res.addChild(new LexNode(tokens_list.get(0)));
         ArrayList<Pair<String, String>> buffer = new ArrayList<>();
@@ -346,7 +315,6 @@ public class Parser {
     }
 
     public static LexNode else_head(ArrayList<Pair<String, String>> tokens_list) {
-        System.out.println("else_head");
         LexNode res = new LexNode(new Pair<>("else_head", "")), expression;
         Integer rightBracket;
         if (tokens_list.size() > 0 && tokens_list.get(0).getFirst().equals("ELSE_KW"))
@@ -367,7 +335,6 @@ public class Parser {
 
     public static LexNode else_body(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println("else_body");
         LexNode res = new LexNode(new Pair<>("else_body", ""));
         res.addChild(new LexNode(tokens_list.get(0)));
         ArrayList<Pair<String, String>> buffer = new ArrayList<>();
@@ -415,8 +382,6 @@ public class Parser {
 
     public static LexNode while_expr(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println("while_expr");
-        System.out.println(tokens_list);
         LexNode res = new LexNode(new Pair<>("while_expr", ""));
         Integer rightBracket = 0, rightCurlyBracket = 0;
         LexNode expression;
@@ -441,8 +406,6 @@ public class Parser {
 
     public static LexNode while_head(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println("while_head");
-        System.out.println(tokens_list);
         LexNode res = new LexNode(new Pair<>("while_head", ""));
         Integer rightBracket = 0;
         LexNode expression;
@@ -462,7 +425,6 @@ public class Parser {
 
     public static LexNode while_body(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println("while_body");
         LexNode res = new LexNode(new Pair<>("while_body", ""));
         res.addChild(new LexNode(tokens_list.get(0)));
         ArrayList<Pair<String, String>> buffer = new ArrayList<>();
@@ -510,8 +472,6 @@ public class Parser {
 
     public static LexNode do_while_expr(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println("do_while_expr");
-        System.out.println(tokens_list);
         LexNode res = new LexNode(new Pair<>("do_while_expr", ""));
         Integer rightBracket = 0, rightCurlyBracket = 0;
         LexNode expression;
@@ -521,7 +481,6 @@ public class Parser {
                 (rightBracket = getPairBracket(tokens_list, rightCurlyBracket + 2, "L_BR", "R_BR")) != null &&
                 tokens_list.get(tokens_list.size() - 1).getFirst().equals("SEP"))
         {
-            System.out.println("GO!");
             res.addChild(new LexNode(tokens_list.get(0)));
             expression = while_body(new ArrayList<Pair<String, String>>(tokens_list.subList(1, rightCurlyBracket + 1)));
             if (expression == null) {
@@ -541,8 +500,6 @@ public class Parser {
 
     public static LexNode condition(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println("condition");
-        System.out.println(tokens_list);
         LexNode res = new LexNode(new Pair<>("condition", ""));
         LexNode expression;
         if(tokens_list.get(0).getFirst().equals("L_BR") && tokens_list.get(tokens_list.size() - 1).getFirst().equals("R_BR"))
@@ -561,8 +518,6 @@ public class Parser {
 
     public static LexNode logical_expression(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println("logical_expression");
-        System.out.println(tokens_list);
         LexNode res = new LexNode(new Pair<>("logical_expression", ""));
         LexNode expression;
         expression = value(tokens_list.get(0));
@@ -572,7 +527,6 @@ public class Parser {
             Integer i = 1;
             while(i < tokens_list.size() && tokens_list.get(i).getFirst().equals("LOGICAL_OP"))
             {
-                System.out.println(tokens_list.get(i).toString() + " " + tokens_list.get(i + 1).toString());
                 expression = value(tokens_list.get(i + 1));
                 if(expression != null)
                 {
@@ -602,8 +556,6 @@ public class Parser {
 
     public static LexNode value(Pair<String, String> token)
     {
-        System.out.println("value");
-        System.out.println(token.toString());
         if(token.getFirst().equals("NUMBER") || token.getFirst().equals("VAR"))
             return new LexNode(token);
         return null;

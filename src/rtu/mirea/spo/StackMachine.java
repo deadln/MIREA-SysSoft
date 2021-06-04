@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class StackMachine {
-    static ArrayList<Pair<String, String>> tokens;
     static ArrayList<Pair<String, String>> stack;
     static HashMap<String, Integer> int_vars;
     static HashMap<String, Float> float_vars;
@@ -17,7 +16,7 @@ public class StackMachine {
 
     public static void init()
     {
-        tokens = new ArrayList<>();
+        //tokens = new ArrayList<>();
         stack = new ArrayList<>();
         int_vars = new HashMap<>();
         float_vars = new HashMap<>();
@@ -26,24 +25,8 @@ public class StackMachine {
         set_vars = new HashMap<>();
     }
 
-    public static void main(String[] args) {
+    public static void execute(ArrayList<Pair<String, String>> tokens) {
         init();
-        StringBuilder sb = new StringBuilder();
-        try (FileReader reader = new FileReader("rpn.txt")) {
-            int c;
-            while ((c = reader.read()) != -1) {
-                sb.append((char) c);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String[] string = sb.toString().split("\\n");
-        for (int i = 0; i < string.length; i += 2) {
-            tokens.add(new Pair<>(string[i], string[i + 1]));
-        }
         System.out.println(tokens);
         System.out.println(tokens.size());
         Pair<String, String> token;

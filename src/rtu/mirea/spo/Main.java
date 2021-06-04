@@ -25,17 +25,22 @@ public class Main {
         source = source.replaceAll("\\s+"," ");
         System.out.println("****************************************РАБОТА ЛЕКСЕРА****************************************");
         ArrayList<Pair<String, String>> tokens = Lexer.getTokensList(source);
+        System.out.println("**************");
+        System.out.println("СПИСОК ТОКЕНОВ");
+        System.out.println("**************");
         for (var token:
                 tokens) {
             System.out.print(token.getFirst() + "|" + token.getSecond() + "\n");
-            //writer.write(token.getFirst() + "\n" + token.getSecond() + "\n");
         }
-        System.out.println("****************************************РАБОТА ПАРСЕРА****************************************");
-        Parser.main(parser);
-        System.out.println("****************************************РАБОТА ПРЕОБРАЗОВАТЕЛЯ ПОЛИЗ**************************");
-        RPN.main(rpn);
+        System.out.println("****************************РАБОТА ПАРСЕРА И ПРЕОБРАЗОВАНИЕ В ПОЛИЗ***************************");
+        ArrayList<Pair<String, String>> rpn = Parser.getRPN(tokens);
+        if(rpn == null)
+        {
+            System.out.println("СИНТАКСИЧЕСКАЯ ОШИБКА");
+            System.exit(1);
+        }
         System.out.println("****************************************РАБОТА СТЕК-МАШИНЫ************************************");
-        StackMachine.main(stack_machine);*/
+        StackMachine.execute(rpn);
 
     }
 }

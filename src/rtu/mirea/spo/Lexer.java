@@ -48,24 +48,6 @@ public class Lexer {
     public static ArrayList<Pair<String, String>> getTokensList(String string) {
         initTokenMaps();
 
-        /*// Чтение файла с исходным кодом
-        StringBuilder sb = new StringBuilder();
-        try(FileReader reader = new FileReader("input.txt"))
-        {
-            int c;
-            while((c = reader.read()) != -1) {
-                sb.append((char) c);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String string = sb.toString();
-        string = string.replaceAll("\\s+"," ");*/
-        //string = string.replaceAll("\t","");
-
         ArrayList<Pair<String, String>> tokens = new ArrayList<>();
         StringBuilder accum = new StringBuilder();
         ArrayList<String> prevTokens = new ArrayList<>();
@@ -135,20 +117,12 @@ public class Lexer {
             System.out.println("+TOKEN: " + accum);
             tokens.add(new Pair<String, String>(prevTokens.get(0), accum.toString()));
         }
-        return tokens;
-
-        /*try(FileWriter writer = new FileWriter("output.txt"))
+        ArrayList<Pair<String, String>> spaceless_tokens = new ArrayList<>();
+        for(var tok: tokens)
         {
-            for (var token:
-                    tokens) {
-                System.out.print(token.getFirst() + "|" + token.getSecond() + "\n");
-                writer.write(token.getFirst() + "\n" + token.getSecond() + "\n");
-            }
-            writer.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+            if(!tok.getFirst().equals("WS"))
+                spaceless_tokens.add(tok);
+        }
+        return spaceless_tokens;
     }
 }
