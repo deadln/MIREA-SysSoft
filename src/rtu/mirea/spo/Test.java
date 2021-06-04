@@ -1,22 +1,18 @@
 package rtu.mirea.spo;
 
+import java.util.ArrayList;
+
 public class Test {
     public static void main(String[] args) {
-        MyHashSet<String> myset = new MyHashSet<String>();
-
-        myset.add("abc");
-        myset.add("bcd");
-        myset.add("abd");
-        myset.add("efg");
-        myset.add("e");
-        myset.add("ef");
-        myset.add("eg");
-        myset.add("g");
-        myset.remove("efg");
-
-        System.out.println(myset.toString());
-        System.out.println(myset.contains("abc"));
-        System.out.println(myset.contains("efg"));
-
+        ArrayList<Integer> a = new ArrayList<>();
+        a.add(1);
+        a.add(2);
+        a.add(3);
+        ArrayList<Integer> b = new ArrayList<>();
+        b.add(4);
+        b.add(5);
+        b.add(6);
+        a.addAll(b);
+        System.out.println(a.toString());
     }
 }
