@@ -33,7 +33,9 @@ public class Parser {
 
         try {
             LexTree tree = lang();
+            System.out.println("--------------------------------");
             System.out.println("TREE");
+            System.out.println("--------------------------------");
             tree.showTree();
         }
         catch (Exception e)
@@ -166,7 +168,6 @@ public class Parser {
                 return null;
             res.addChild(new LexNode(tokens_list.get(2)));
             res.addChild(expression);
-            //return arithmetic_expr((ArrayList<Pair<String, String>>) tokens_list.subList(3, tokens_list.size() - 1));
         }
         res.addChild(new LexNode(tokens_list.get(tokens_list.size() - 1)));
         return res;

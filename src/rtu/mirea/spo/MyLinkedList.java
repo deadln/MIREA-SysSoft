@@ -31,4 +31,18 @@ public class MyLinkedList<T> {
             return iter.getValue();
         return null;
     }
+
+    @Override
+    public String toString()
+    {
+        LinkedListNode<T> iter = root;
+        StringBuilder sb = new StringBuilder("[");
+        while(iter != null)
+        {
+            sb.append(iter.getValue().toString() + " ");
+            iter = iter.getNext();
+        }
+        sb.append("]");
+        return sb.toString();
+    }
 }

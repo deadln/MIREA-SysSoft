@@ -2,14 +2,13 @@ package rtu.mirea.spo;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RPN {
     static ArrayList<Pair<String, String>> tokens;
-//    static ArrayList<Pair<String, String>> stack;
-//    static ArrayList<Pair<String, String>> rpn;
     static HashMap<String, Integer> opPriority;
 
     static void initOperatorPriorities()
@@ -47,9 +46,6 @@ public class RPN {
         {
             token = tokens_list.get(i);
             i++;
-            System.out.println("TOKEN" + token.toString());
-            System.out.println("STACK" + stack.toString());
-            System.out.println("RPN" + rpn.toString());
             if(token.getFirst().equals("VAR") || token.getFirst().equals("NUMBER"))
             {
                 rpn.add(token);
@@ -70,7 +66,6 @@ public class RPN {
             }
             else if(token.getFirst().equals("R_BR"))
             {
-                System.out.println("BRACERS");
                 while(stack.size() > 0 && !stack.get(stack.size() - 1).getFirst().equals("L_BR"))
                     rpn.add(stack.remove(stack.size() - 1));
                 stack.remove(stack.size() - 1);
@@ -81,7 +76,6 @@ public class RPN {
                     rpn.add(stack.remove(stack.size() - 1));
                 rpn.add(token);
             }
-            System.out.println("------------------------------------------");
         }
         while(stack.size() > 0)
             rpn.add(stack.remove(stack.size() - 1));
@@ -112,11 +106,11 @@ public class RPN {
             if (!string[i].equals("WS"))
                 tokens.add(new Pair<>(string[i], string[i + 1]));
         }
+        System.out.println("Original expressions");
         System.out.println(tokens.toString());
         int i = 0, j, start, end;
         Pair<String, String> token;
         while(i < tokens.size())
-        //while(i < 78)//48
         {
             token = tokens.get(i);
             if(token.getFirst().equals("IF_KW"))
@@ -134,12 +128,9 @@ public class RPN {
                 while(expression_end < tokens.size() && !tokens.get(expression_end).getFirst().equals("R_S_BR"))
                     expression_end++;
                 if_body = toRPN(new ArrayList<>(tokens.subList(expression_start, expression_end)));
-//                if_body.add(new Pair<String, String>("NUMBER", Integer.toString(rpn_condition_start)));
-//                if_body.add(new Pair<String, String>("OP", "!!"));
                 // Добавление перехода за пределы тела if
                 rpn.add(new Pair<String, String>("NUMBER", Integer.toString(rpn.size() + if_body.size() + 4)));
                 rpn.add(new Pair<String, String>("OP", "!F"));
-                //rpn.add(new Pair<>(""))
                 if(tokens.get(expression_end + 1).getFirst().equals("ELSE_KW"))
                 {
                     if(tokens.get(expression_end + 2).getFirst().equals("IF_KW"))
@@ -151,8 +142,7 @@ public class RPN {
                         while(condition_end < tokens.size() && !tokens.get(condition_end).getFirst().equals("R_BR"))
                             condition_end++;
                         if_condition_2 = toRPN(new ArrayList<>(tokens.subList(condition_start, condition_end + 1)));
-//                        rpn.addAll(toRPN(new ArrayList<>(tokens.subList(condition_start, condition_end + 1))));
-                        expression_start = condition_end + 3;
+                        expression_start = condition_end + 2;
                         expression_end = expression_start;
                         while(expression_end < tokens.size() && !tokens.get(expression_end).getFirst().equals("R_S_BR"))
                             expression_end++;
@@ -178,13 +168,10 @@ public class RPN {
                         rpn.addAll(if_body);
                         rpn.addAll(else_body);
                     }
-//                    if_body.add(new Pair<String, String>("NUMBER", Integer.toString(rpn_condition_start)));
-//                    if_body.add(new Pair<String, String>("OP", "!!"));
 
                 }
 
 
-//                rpn.addAll(if_body);
                 i = expression_end;
             }
             else if(token.getFirst().equals("WHILE_KW"))
@@ -240,7 +227,20 @@ public class RPN {
             }
             i++;
         }
+        System.out.println("Reverse polish notation:");
         System.out.println(rpn.toString());
         System.out.println(rpn.size());
+        try(FileWriter writer = new FileWriter("rpn.txt"))
+        {
+            for (var tok:
+                    rpn) {
+                writer.write(tok.getFirst() + "\n" + tok.getSecond() + "\n");
+            }
+            writer.flush();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
