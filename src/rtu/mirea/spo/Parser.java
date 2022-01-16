@@ -27,6 +27,20 @@ public class Parser {
 
     }
 
+    public static LexTree getSyntaxTree(ArrayList<Pair<String, String>> tokens_list){
+        tokens = new ArrayList<>(tokens_list);
+
+        try {
+            LexTree tree = lang();
+            return tree;
+        }
+        catch (Exception e)
+        {
+            System.out.println(e);
+            return null;
+        }
+    }
+
     public static LexTree lang()
     {
         LexTree tree = new LexTree(new Pair("lang", ""));
@@ -122,6 +136,12 @@ public class Parser {
             return parent;
         }
         expression = do_while_expr(tokens_list);
+        if(expression != null)
+        {
+            parent.addChild(expression);
+            return parent;
+        }
+        expression = print_expr(tokens_list);
         if(expression != null)
         {
             parent.addChild(expression);
@@ -495,6 +515,21 @@ public class Parser {
             res.addChild(new LexNode(tokens_list.get(tokens_list.size() - 1)));
             return res;
         }
+        return null;
+    }
+
+    public static LexNode print_expr(ArrayList<Pair<String, String>> tokens_list){
+        LexNode res = new LexNode(new Pair<>("print_expr", ""));
+        if(tokens_list.size() == 3 && tokens_list.get(0).getFirst().equals("PRINT_KW") && tokens_list.get(2).getFirst().equals("SEP")){
+            LexNode val = value(tokens_list.get(1));
+            if(val != null){
+                res.addChild(new LexNode(tokens_list.get(0)));
+                res.addChild(val);
+                res.addChild(new LexNode(tokens_list.get(2)));
+                return res;
+            }
+        }
+
         return null;
     }
 

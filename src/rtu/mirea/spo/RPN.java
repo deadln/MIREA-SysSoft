@@ -32,7 +32,8 @@ public class RPN {
         opPriority.put("<", 3);
         opPriority.put("<=", 3);
         opPriority.put("=", 4);
-        opPriority.put(";", 5);
+        opPriority.put("изъявити", 5);
+        opPriority.put(";", 6);
     }
 
     public static ArrayList<Pair<String, String>> toRPN(ArrayList<Pair<String, String>> tokens_list)
@@ -49,11 +50,13 @@ public class RPN {
             if(token.getFirst().equals("VAR") || token.getFirst().equals("NUMBER"))
             {
                 rpn.add(token);
-                if(stack.size() > 0 && stack.get(stack.size() - 1).getFirst().equals("VAR_TYPE"))
+                if(stack.size() > 0 && (stack.get(stack.size() - 1).getFirst().equals("VAR_TYPE") ||
+                        stack.get(stack.size() - 1).getFirst().equals("PRINT_KW")))
                     rpn.add(stack.remove(stack.size() - 1));
             }
             else if(token.getFirst().equals("OP") || token.getFirst().equals("LOGICAL_OP") ||
-                    token.getFirst().equals("ASSIGN_OP") || token.getFirst().equals("VAR_TYPE") )
+                    token.getFirst().equals("ASSIGN_OP") || token.getFirst().equals("VAR_TYPE") ||
+                    token.getFirst().equals("PRINT_KW"))
             {
                 while(stack.size() > 0 && opPriority.get(stack.get(stack.size() - 1).getSecond()) != null &&
                         (opPriority.get(stack.get(stack.size() - 1).getSecond()) < opPriority.get(token.getSecond())))
@@ -208,9 +211,7 @@ public class RPN {
             }
             i++;
         }
-        System.out.println("Reverse polish notation:");
-        System.out.println(rpn.toString());
-        System.out.println(rpn.size());
+
         return rpn;
     }
 }

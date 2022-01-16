@@ -25,6 +25,7 @@ public class Lexer {
         tokenPatterns.put("^инако$", "ELSE_KW");
         tokenPatterns.put("^покаместъ$", "WHILE_KW");
         tokenPatterns.put("^делати$", "DO_KW");
+        tokenPatterns.put("^изъявити$", "PRINT_KW");
 
         tokenPatterns.put("^\s$", "WS");
         tokenPatterns.put("^\\($", "L_BR");
@@ -42,6 +43,7 @@ public class Lexer {
         tokenPriorities.put("ELSE_KW", 3);
         tokenPriorities.put("WHILE_KW", 3);
         tokenPriorities.put("DO_KW", 3);
+        tokenPriorities.put("PRINT_KW", 3);
 
     }
 

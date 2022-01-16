@@ -33,7 +33,7 @@ public class StackMachine {
         for(int i = 0; i < tokens.size(); i++)
         {
             token = tokens.get(i);
-            System.out.println("Токен: " + token.toString());
+            /*System.out.println("Токен: " + token.toString());
             System.out.println("Переменные:");
             if(int_vars.size() > 0)
                 System.out.println(int_vars.toString());
@@ -44,7 +44,7 @@ public class StackMachine {
             if(list_vars.size() > 0)
                 System.out.println(list_vars.toString());
             if(set_vars.size() > 0)
-                System.out.println(set_vars.toString());
+                System.out.println(set_vars.toString());*/
             if(token.getFirst().equals("VAR") || token.getFirst().equals("NUMBER") || token.getFirst().equals("BOOLEAN"))
             {
                 stack.add(token);
@@ -73,6 +73,35 @@ public class StackMachine {
                     set_vars.put(variable.getSecond(), new MyHashSet<Integer>());
                 }
                 stack.add(variable);
+            }
+            else if(token.getFirst().equals("PRINT_KW"))
+            {
+                Pair<String, String> value = stack.remove(stack.size() - 1);
+                if(value.getFirst().equals("VAR")) {
+                    if(int_vars.containsKey(value.getSecond()))
+                    {
+                        System.out.println(value.getSecond() + ": " + int_vars.get(value.getSecond()).toString());
+                    }
+                    else if(float_vars.containsKey(value.getSecond()))
+                    {
+                        System.out.println(value.getSecond() + ": " + float_vars.get(value.getSecond()).toString());
+                    }
+                    else if(bool_vars.containsKey(value.getSecond()))
+                    {
+                        System.out.println(value.getSecond() + ": " + bool_vars.get(value.getSecond()).toString());
+                    }
+                    else if(list_vars.containsKey(value.getSecond()))
+                    {
+                        System.out.println(value.getSecond() + ": " + list_vars.get(value.getSecond()).toString());
+                    }
+                    else if(set_vars.containsKey(value.getSecond()))
+                    {
+                        System.out.println(value.getSecond() + ": " + set_vars.get(value.getSecond()).toString());
+                    }
+                }
+                else{
+                    System.out.println(value.getSecond());
+                }
             }
             else if(token.getFirst().equals("OP"))
             {
@@ -225,7 +254,7 @@ public class StackMachine {
                 stack.clear();
             }
         }
-        System.out.println("Переменные:");
+        /*System.out.println("Переменные:");
         if(int_vars.size() > 0)
             System.out.println(int_vars.toString());
         if(float_vars.size() > 0)
@@ -235,7 +264,7 @@ public class StackMachine {
         if(list_vars.size() > 0)
             System.out.println(list_vars.toString());
         if(set_vars.size() > 0)
-            System.out.println(set_vars.toString());
+            System.out.println(set_vars.toString());*/
 
     }
 
