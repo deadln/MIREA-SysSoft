@@ -20,6 +20,10 @@ public class LexNode {
         return label;
     }
 
+    public ArrayList<LexNode> getChildren() {
+        return children;
+    }
+
     public void showTree()
     {
         System.out.println("PARENT");

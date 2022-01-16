@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Parser {
     static ArrayList<Pair<String, String>> tokens;
 
-    public static ArrayList<Pair<String, String>> getRPN(ArrayList<Pair<String, String>> tokens_list) {
+    /*public static ArrayList<Pair<String, String>> getRPN(ArrayList<Pair<String, String>> tokens_list) {
         tokens = new ArrayList<>(tokens_list);
 
         try {
@@ -25,7 +25,7 @@ public class Parser {
             return null;
         }
 
-    }
+    }*/
 
     public static LexTree getSyntaxTree(ArrayList<Pair<String, String>> tokens_list){
         tokens = new ArrayList<>(tokens_list);

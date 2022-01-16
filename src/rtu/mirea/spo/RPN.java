@@ -85,7 +85,38 @@ public class RPN {
         return rpn;
     }
 
-    public static ArrayList<Pair<String, String>> getRPN(ArrayList<Pair<String, String>> tokens) {
+    public static ArrayList<Pair<String, String>> treeToList(LexNode node){
+        ArrayList<Pair<String, String>> res = new ArrayList<>();
+        if(node.getLabel().getFirst().equals("VAR") || node.getLabel().getFirst().equals("VAR_TYPE") ||
+                node.getLabel().getFirst().equals("IF_KW") || node.getLabel().getFirst().equals("ELSE_KW") ||
+                node.getLabel().getFirst().equals("WHILE_KW") || node.getLabel().getFirst().equals("DO_KW") ||
+                node.getLabel().getFirst().equals("OP") || node.getLabel().getFirst().equals("LOGICAL_OP") ||
+                node.getLabel().getFirst().equals("ASSIGN_OP") || node.getLabel().getFirst().equals("NUMBER") ||
+                node.getLabel().getFirst().equals("L_BR") || node.getLabel().getFirst().equals("R_BR") ||
+                node.getLabel().getFirst().equals("L_S_BR") || node.getLabel().getFirst().equals("R_S_BR") ||
+                node.getLabel().getFirst().equals("SEP") || node.getLabel().getFirst().equals("PRINT_KW")) {
+            res.add(node.getLabel());
+        }
+        else {
+            for (LexNode child :
+                    node.getChildren()) {
+                res.addAll(treeToList(child));
+            }
+        }
+        return res;
+    }
+
+    public static ArrayList<Pair<String, String>> getRPN(LexTree tree) {
+
+        ArrayList<Pair<String, String>> tokens = treeToList(tree.getRoot());
+        System.out.println("**************");
+        System.out.println("СПИСОК ТОКЕНОВ ИЗ ДЕРЕВА");
+        System.out.println("**************");
+        for (var token:
+                tokens) {
+            System.out.print(token.getFirst() + "|" + token.getSecond() + "\n");
+        }
+
         ArrayList<Pair<String, String>> rpn = new ArrayList<>();
 
 

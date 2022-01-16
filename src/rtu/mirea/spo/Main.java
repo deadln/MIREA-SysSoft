@@ -45,8 +45,8 @@ public class Main {
         System.out.println("--------------------------------");
         tree.showTree();
         System.out.println("*********************************ПРЕОБРАЗОВАНИЕ ДЕРЕВА В ПОЛИЗ********************************");
-        // ArrayList<Pair<String, String>> rpn = RPN.getRPN(tree);
-        ArrayList<Pair<String, String>> rpn = RPN.getRPN(tokens);
+         ArrayList<Pair<String, String>> rpn = RPN.getRPN(tree);
+//        ArrayList<Pair<String, String>> rpn = RPN.getRPN(tokens);
         if(rpn == null)
         {
             System.out.println("СИНТАКСИЧЕСКАЯ ОШИБКА");

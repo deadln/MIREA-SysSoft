@@ -1,5 +1,5 @@
 lang -> expr+
-expr -> declaring_expr | assign_expr | if_expr | while_expr | do_while_expr
+expr -> declaring_expr | assign_expr | if_expr | while_expr | do_while_expr | print_expr
 declaring_expr -> VAR_TYPE VAR (ASSIGN_OP arithmetic_expr)? SEP
 assign_expr -> VAR ASSIGN_OP arithmetic_expr SEP
 arithmetic_expr -> (value | L_BR arithmetic_expr R_BR) (OP arithmetic_expr)*
@@ -15,6 +15,7 @@ while_expr -> while_head while_body
 while_head -> WHILE_KW condition
 while_body -> L_S_BR expr+ R_S_BR
 do_while_expr -> DO_KW while_body while_head SEP
+print_expr -> PRINT_KW value SEP
 
 ----------------------------------------------
 assign_expr -> VAR ASSIGN_OP value (OP value)* SEP
