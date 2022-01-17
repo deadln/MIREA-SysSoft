@@ -12,11 +12,11 @@ import java.util.ArrayList;
 public class TreeOptimizer {
     public static LexTree optimizeTree(LexTree tree){
 //        LexTree optimizedTree = new LexTree(treeTraversal(tree.getRoot()));
-        treeTraversal(tree.getRoot());
+        tree = new LexTree(treeTraversal(tree.getRoot()));
         return tree;
     }
 
-    public static void treeTraversal(LexNode node){
+    public static LexNode treeTraversal(LexNode node){
         ArrayList<Pair<String, String>> res = new ArrayList<>();
         if(node.getLabel().getFirst().equals("VAR") || node.getLabel().getFirst().equals("VAR_TYPE") ||
                 node.getLabel().getFirst().equals("IF_KW") || node.getLabel().getFirst().equals("ELSE_KW") ||
@@ -26,21 +26,25 @@ public class TreeOptimizer {
                 node.getLabel().getFirst().equals("L_BR") || node.getLabel().getFirst().equals("R_BR") ||
                 node.getLabel().getFirst().equals("L_S_BR") || node.getLabel().getFirst().equals("R_S_BR") ||
                 node.getLabel().getFirst().equals("SEP") || node.getLabel().getFirst().equals("PRINT_KW")) {
-            return;
+            return node;
         }
         else {
-
             for(int i = 0; i < node.getChildren().size(); i++){
                 if(node.getChildren().get(i).getLabel().getFirst().equals("if_expr")){
-                    optimizeIf(node.getChildren().get(i));
+                    node.getChildren().set(i, optimizeIf(node.getChildren().get(i)));
                     if(node.getChildren().get(i) == null) {
                         node.getChildren().remove(i);
                         i--;
-                        System.out.println(node.getChildren());
+                        System.out.println("UPDATE\n" + node.getChildren().toString());
+                        return null;
                     }
                 }
                 else{
-                    treeTraversal(node.getChildren().get(i));
+                    LexNode subNode = treeTraversal(node.getChildren().get(i));
+                    if(subNode == null) {
+                        node.getChildren().remove(i);
+                        i--;
+                    }
                 }
             }
             /*for (LexNode child :
@@ -48,27 +52,33 @@ public class TreeOptimizer {
                 res.addAll(treeToList(child));
             }*/
         }
+        return node;
     }
 
-    public static void optimizeIf(LexNode expr){
+    public static LexNode optimizeIf(LexNode expr){
         if(expr.getChildren().get(1).getChildren().size() < 3){ // пустой if
             System.out.println("EMPTY IF");
             if(expr.getChildren().size() > 2){ // есть else
                 System.out.println("\tELSE IS PRESENT");
                 if(expr.getChildren().get(3).getChildren().size() < 3){ // пустой else
                     System.out.println("\t\tEMPTY ELSE");
-                    expr = null;
+                    return null;
+//                    expr = null;
+//                    System.out.println("BEFORE\n" + expr.getChildren().toString());
                 }
             }
             else { // нет else
-                expr = null;
+                return null;
+//                expr = null;
             }
         }
         else if(expr.getChildren().size() > 2 && expr.getChildren().get(3).getChildren().size() < 3){ // пустой else
             System.out.println("EMPTY ELSE");
             expr.getChildren().remove(2);
             expr.getChildren().remove(2);
+            return expr;
         }
+        return expr;
     }
 
 

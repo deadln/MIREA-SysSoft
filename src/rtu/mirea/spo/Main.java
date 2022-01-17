@@ -34,6 +34,11 @@ public class Main {
         }
         System.out.println("***********************РАБОТА ПАРСЕРА И ПОСТРОЕНИЕ СИНТАКСИЧЕСКОГО ДЕРЕВА*********************");
         LexTree tree = Parser.getSyntaxTree(tokens);
+        if(tree == null)
+        {
+            System.out.println("СИНТАКСИЧЕСКАЯ ОШИБКА");
+            System.exit(1);
+        }
         System.out.println("--------------------------------");
         System.out.println("ДЕРЕВО");
         System.out.println("--------------------------------");
@@ -47,11 +52,6 @@ public class Main {
         System.out.println("*********************************ПРЕОБРАЗОВАНИЕ ДЕРЕВА В ПОЛИЗ********************************");
          ArrayList<Pair<String, String>> rpn = RPN.getRPN(tree);
 //        ArrayList<Pair<String, String>> rpn = RPN.getRPN(tokens);
-        if(rpn == null)
-        {
-            System.out.println("СИНТАКСИЧЕСКАЯ ОШИБКА");
-            System.exit(1);
-        }
         System.out.println("ПОЛИЗ:");
         System.out.println(rpn.toString());
         System.out.println(rpn.size());

@@ -38,4 +38,12 @@ public class LexNode {
             node.showTree();
         }
     }
+
+    @Override
+    public String toString() {
+        return "PARENT\n" +
+                label +
+                "\nCHILDREN\n" +
+                children;
+    }
 }
