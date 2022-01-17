@@ -110,6 +110,7 @@ public class Parser {
 
     public static LexNode expr(ArrayList<Pair<String, String>> tokens_list)
     {
+        System.out.println(tokens_list.toString());
         LexNode expression, parent = new LexNode(new Pair<>("expr", ""));
         expression = declaring_expr(tokens_list);
         if(expression != null)

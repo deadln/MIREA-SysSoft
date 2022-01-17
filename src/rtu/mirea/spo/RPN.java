@@ -146,9 +146,9 @@ public class RPN {
                 // Добавление перехода за пределы тела if
                 rpn.add(new Pair<String, String>("NUMBER", Integer.toString(rpn.size() + if_body.size() + 4)));
                 rpn.add(new Pair<String, String>("OP", "!F"));
-                if(tokens.get(expression_end + 1).getFirst().equals("ELSE_KW"))
+                if(tokens.size() > expression_end + 1 && tokens.get(expression_end + 1).getFirst().equals("ELSE_KW"))
                 {
-                    if(tokens.get(expression_end + 2).getFirst().equals("IF_KW"))
+                    if(tokens.size() > expression_end + 2 && tokens.get(expression_end + 2).getFirst().equals("IF_KW"))
                     {
                         ArrayList<Pair<String, String>> if_condition_2;
                         ArrayList<Pair<String, String>> if_body_2;
