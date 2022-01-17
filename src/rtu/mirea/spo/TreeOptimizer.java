@@ -17,7 +17,6 @@ public class TreeOptimizer {
     }
 
     public static LexNode treeTraversal(LexNode node){
-        ArrayList<Pair<String, String>> res = new ArrayList<>();
         if(node.getLabel().getFirst().equals("VAR") || node.getLabel().getFirst().equals("VAR_TYPE") ||
                 node.getLabel().getFirst().equals("IF_KW") || node.getLabel().getFirst().equals("ELSE_KW") ||
                 node.getLabel().getFirst().equals("WHILE_KW") || node.getLabel().getFirst().equals("DO_KW") ||
@@ -39,6 +38,25 @@ public class TreeOptimizer {
                         return null;
                     }
                 }
+                else if(node.getChildren().get(i).getLabel().getFirst().equals("while_expr") ||
+                        node.getChildren().get(i).getLabel().getFirst().equals("do_while_expr")){
+                    node.getChildren().set(i, optimizeWhile(node.getChildren().get(i)));
+                    if(node.getChildren().get(i) == null) {
+                        node.getChildren().remove(i);
+                        i--;
+                        System.out.println("UPDATE\n" + node.getChildren().toString());
+                        return null;
+                    }
+                }
+//                else if(node.getChildren().get(i).getLabel().getFirst().equals("do_while_expr")){
+//                    node.getChildren().set(i, optimizeDoWhile(node.getChildren().get(i)));
+//                    if(node.getChildren().get(i) == null) {
+//                        node.getChildren().remove(i);
+//                        i--;
+//                        System.out.println("UPDATE\n" + node.getChildren().toString());
+//                        return null;
+//                    }
+//                }
                 else{
                     LexNode subNode = treeTraversal(node.getChildren().get(i));
                     if(subNode == null) {
@@ -77,6 +95,14 @@ public class TreeOptimizer {
             expr.getChildren().remove(2);
             expr.getChildren().remove(2);
             return expr;
+        }
+        return expr;
+    }
+
+    public static LexNode optimizeWhile(LexNode expr){
+        if(expr.getChildren().get(1).getChildren().size() < 3){ // пустой while
+            System.out.println("EMPTY WHILE");
+            return null;
         }
         return expr;
     }

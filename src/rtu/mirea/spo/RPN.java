@@ -163,8 +163,12 @@ public class RPN {
                         while(expression_end < tokens.size() && !tokens.get(expression_end).getFirst().equals("R_S_BR"))
                             expression_end++;
                         if_body_2 = toRPN(new ArrayList<>(tokens.subList(expression_start, expression_end)));
-                        if_body.add(new Pair<String, String>("NUMBER", Integer.toString(rpn.size() + if_body.size() + 4 + if_condition_2.size() + if_body_2.size())));
+                        if_body.add(new Pair<String, String>("NUMBER", Integer.toString(rpn.size() + if_body.size() + 6 + if_condition_2.size() + if_body_2.size())));
                         if_body.add(new Pair<String, String>("OP", "!!"));
+
+                        rpn.add(new Pair<String, String>("NUMBER", Integer.toString(rpn.size() + if_body.size() + 2)));
+                        rpn.add(new Pair<String, String>("OP", "!F"));
+
                         rpn.addAll(if_body);
                         rpn.addAll(if_condition_2);
                         rpn.add(new Pair<String, String>("NUMBER", Integer.toString(rpn.size() + if_body_2.size() + 2)));
@@ -179,8 +183,12 @@ public class RPN {
                         while(expression_end < tokens.size() && !tokens.get(expression_end).getFirst().equals("R_S_BR"))
                             expression_end++;
                         else_body = toRPN(new ArrayList<>(tokens.subList(expression_start, expression_end)));
-                        if_body.add(new Pair<String, String>("NUMBER", Integer.toString(rpn.size() + if_body.size() + 2 + else_body.size())));
+                        if_body.add(new Pair<String, String>("NUMBER", Integer.toString(rpn.size() + if_body.size() + 3 + else_body.size())));
                         if_body.add(new Pair<String, String>("OP", "!!"));
+
+                        rpn.add(new Pair<String, String>("NUMBER", Integer.toString(rpn.size() + if_body.size() + 2)));
+                        rpn.add(new Pair<String, String>("OP", "!F"));
+
                         rpn.addAll(if_body);
                         rpn.addAll(else_body);
                     }
