@@ -1,37 +1,42 @@
 package rtu.mirea.spo;
 
 public class Triad {
-    private String a;
-    private String b;
-    private String op;
+    private Pair<String, String> a;
+    private Pair<String, String> b;
+    private Pair<String, String> op;
 
-    public Triad(String a, String b, String op) {
+    public Triad(Pair<String, String> op, Pair<String, String> a, Pair<String, String> b) {
         this.a = a;
         this.b = b;
         this.op = op;
     }
 
-    public String getA() {
+    public Pair<String, String> getA() {
         return a;
     }
 
-    public String getB() {
+    public Pair<String, String> getB() {
         return b;
     }
 
-    public String getOp() {
+    public Pair<String, String> getOp() {
         return op;
     }
 
-    public void setA(String a) {
+    public void setA(Pair<String, String> a) {
         this.a = a;
     }
 
-    public void setB(String b) {
+    public void setB(Pair<String, String> b) {
         this.b = b;
     }
 
-    public void setOp(String op) {
+    public void setOp(Pair<String, String> op) {
         this.op = op;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + op + ", " + a + ", " + b + ")";
     }
 }
