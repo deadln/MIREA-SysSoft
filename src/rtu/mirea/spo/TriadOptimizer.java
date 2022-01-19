@@ -9,15 +9,9 @@ import java.util.HashSet;
  * Идея для оптимизации: на этапе построения дерева определять "важность" переменных, а затем передавать в оптимизатор
  * высшего уровня важности, после чего помечать важными те переменные, которые были использованы для вычисления важных
  * переменных
- * t35 не переопределена ссылка (фикс)
- * t37 первая ссылка переопределена неправильно (фикс)
- * t42 вторая ссылка ошибается на +1. (фикс) Появляется из-за приоритета присваивания. Фикс - перенести ссылку на первый исполняемый оператор, помечать операторы к триадам
- * t52 не переопределена ссылка (фикс)
- * t57 вторая ссылка не переопределена (фикс)
  *
  * Заметки
  * На одну триаду могут ссылаться несколько триад
- * По какой-то причине какие-то ссылки не улавливаются программой
  */
 
 public class TriadOptimizer {
@@ -38,8 +32,13 @@ public class TriadOptimizer {
     public static ArrayList<Pair<String, String>> optimizeTriads(ArrayList<Pair<String, String>> tokens) {
         init();
         ArrayList<Pair<String, String>> tokens_copy = new ArrayList<>(tokens);
+        generateTriads(tokens);
 
+        return tokens_copy;
+    }
 
+    public static void generateTriads(ArrayList<Pair<String, String>> tokens)
+    {
         for(int i = 0; i < tokens.size(); i++){
             if(tokens.get(i).getSecond().equals(("!!")) || tokens.get(i).getSecond().equals(("!F")) ||
                     tokens.get(i).getSecond().equals(("!T"))) {
@@ -78,23 +77,13 @@ public class TriadOptimizer {
                     // Переопределение ссылки перехода на триаду для безусловного перехода
                     if (tokens.get(i).getSecond().equals("!!")) {
                         // Если триада уже существует
-//                        if (triad_belongings.containsKey(stack_elem.getFirst())) {
                         if (triad_belongings.containsKey(Integer.parseInt(op1.getSecond()))) {
                             op1 = new Pair("TRIAD", triad_belongings.get(Integer.parseInt(op1.getSecond())).toString());
                         }
                         // Иначе отложить назначение ссылки
                         else {
-                            // Смещение ссылки номера в ПОЛИЗ на первый исполняемый оператор
-//                            while(!tokens.get(Integer.parseInt(op1.getSecond())).getFirst().equals("OP") &&
-//                                    !tokens.get(Integer.parseInt(op1.getSecond())).getFirst().equals("VAR_TYPE") &&
-//                                    !tokens.get(Integer.parseInt(op1.getSecond())).getFirst().equals("PRINT_KW") &&
-//                                    !tokens.get(Integer.parseInt(op1.getSecond())).getFirst().equals("ASSIGN_OP") &&
-//                                    !tokens.get(Integer.parseInt(op1.getSecond())).getFirst().equals("LOGICAL_OP")){
-//                                op1.setSecond(Integer.toString(Integer.parseInt(op1.getSecond()) + 1));
-//                            }
                             if(!delayed_reference.containsKey(Integer.parseInt(op1.getSecond()))){
                                 delayed_reference.put(Integer.parseInt(op1.getSecond()), new HashSet<>());
-//                                delayed_reference.put(Integer.parseInt(op1.getSecond()), triads.size());
                             }
                             delayed_reference.get(Integer.parseInt(op1.getSecond())).add(triads.size());
                         }
@@ -149,48 +138,15 @@ public class TriadOptimizer {
                         // Если триада уже существует
                         if (triad_belongings.containsKey(Integer.parseInt(op2.getSecond()))) {
                             op2 = new Pair("TRIAD", triad_belongings.get(Integer.parseInt(op2.getSecond())).toString());
-                        } else { // Иначе отложить назначение ссылки
-                            // Смещение ссылки номера в ПОЛИЗ на первый исполняемый оператор
-//                            while(!tokens.get(Integer.parseInt(op2.getSecond())).getFirst().equals("OP") &&
-//                                    !tokens.get(Integer.parseInt(op2.getSecond())).getFirst().equals("VAR_TYPE") &&
-//                                    !tokens.get(Integer.parseInt(op2.getSecond())).getFirst().equals("PRINT_KW") &&
-//                                    !tokens.get(Integer.parseInt(op2.getSecond())).getFirst().equals("ASSIGN_OP") &&
-//                                    !tokens.get(Integer.parseInt(op2.getSecond())).getFirst().equals("LOGICAL_OP")){
-//                                op2.setSecond(Integer.toString(Integer.parseInt(op2.getSecond()) + 1));
-//                            }
+                        } else {
+                            // Иначе отложить назначение ссылки
                             if(!delayed_reference.containsKey(Integer.parseInt(op2.getSecond()))){
                                 delayed_reference.put(Integer.parseInt(op2.getSecond()), new HashSet<>());
-//                                delayed_reference.put(Integer.parseInt(op2.getSecond()), triads.size());
                             }
                             delayed_reference.get(Integer.parseInt(op2.getSecond())).add(triads.size());
                         }
 
-                        // Если триада уже существует (кажется, это не нужно, так как ссылкой является только второй операнд)
-//                        if (triad_belongings.containsKey(stack_elem1.getFirst())) {
-//                            op1 = new Pair("TRIAD", triad_belongings.get(stack_elem1.getFirst()).toString());
-//                        } else { // Иначе отложить назначение ссылки
-//                            if(delayed_reference.containsKey(Integer.parseInt(op1.getSecond()))){
-//                                delayed_reference.put(Integer.parseInt(op1.getSecond()), new HashSet<>());
-////                                delayed_reference.put(Integer.parseInt(op1.getSecond()), triads.size());
-//                            }
-//                            delayed_reference.get(Integer.parseInt(op1.getSecond())).add(triads.size());
-//                        }
                     }
-
-                    // Если на элемент существует отложенная ссылка (возможно не нужно, тк ссылка не может быть не на начало операции)
-//                    if (delayed_reference.containsKey(stack_elem2.getFirst())) {
-//                        Triad updated_triad = triads.get(delayed_reference.get((stack_elem2.getFirst())));
-//                        // Замена ссылки для безусловного перехода
-//                        if (updated_triad.getOp().getSecond().equals("!!")) {
-//                            triads.set(delayed_reference.get(stack_elem2.getFirst()), new Triad(updated_triad.getOp(),
-//                                    new Pair("TRIAD", Integer.toString(triads.size())), null));
-//                        }
-//                        // Замена ссылки для условных переходов
-//                        else if (updated_triad.getOp().getSecond().equals("!F") || updated_triad.getOp().getSecond().equals("!T")){
-//                            triads.set(delayed_reference.get(stack_elem2.getFirst()), new Triad(updated_triad.getOp(),
-//                                    updated_triad.getA(), new Pair("TRIAD", Integer.toString(triads.size()))));
-//                        }
-//                    }
 
                     // Если на элемент существует отложенная ссылка
                     if (delayed_reference.containsKey(stack_elem1.getFirst())) {
@@ -239,7 +195,5 @@ public class TriadOptimizer {
         for (int i = 0; i < triads.size(); i++) {
             System.out.println("t" + i + ": " + triads.get(i));
         }
-
-        return tokens_copy;
     }
 }
