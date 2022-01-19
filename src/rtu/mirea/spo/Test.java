@@ -6,12 +6,9 @@ import java.util.HashSet;
 
 public class Test {
     public static void main(String[] args) {
-        HashSet<Integer> lst = new HashSet<>();
-        lst.add(1);
-        lst.add(2);
-        lst.add(3);
-        for(var i : lst)
-            System.out.println(i);
+        String a = "2";
+        String b = "6";
+        System.out.println(stringAddition(a,b));
 
 //        Pair<String, String> pair1 = new Pair<>("if", "else");
 //        Pair<String, String> pair2 = new Pair<>(pair1);
@@ -19,5 +16,9 @@ public class Test {
 //        System.out.println(pair1);
 //        System.out.println(pair2);
 
+    }
+
+    public static String stringAddition(String a, String b){
+        return Float.toString(Float.parseFloat(a) + Float.parseFloat(b));
     }
 }

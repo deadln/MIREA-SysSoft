@@ -12,6 +12,12 @@ import java.util.HashSet;
  *
  * Заметки
  * На одну триаду могут ссылаться несколько триад
+ *
+ * Цели оптимизаций триад
+ * В t11 и t12 предвычислить константу и заменить на наё ссылку в t13
+ * t19: предвычислить константу и заменить на неё ссылку в t20
+ * Удалить переменую азъ: удалить триады t7 t8 t9 t46 t47 t48
+ * Удалить переменную веди: удалить триады t13 t14 t15 t49 t50 t51
  */
 
 public class TriadOptimizer {
@@ -33,6 +39,7 @@ public class TriadOptimizer {
         init();
         ArrayList<Pair<String, String>> tokens_copy = new ArrayList<>(tokens);
         generateTriads(tokens);
+        optimizeConstants();
 
         return tokens_copy;
     }
@@ -183,7 +190,6 @@ public class TriadOptimizer {
                     }
 
                     triads.add(new Triad(new Pair<>(tokens.get(i)), op1, op2));
-                    // Не чинит сломанные, но ломает нормально работающую триаду
                     triad_belongings.put(stack_elem2.getFirst(), triads.size() - 1);
                     triad_belongings.put(stack_elem1.getFirst(), triads.size() - 1);
                     triad_belongings.put(i, triads.size() - 1);
@@ -194,6 +200,85 @@ public class TriadOptimizer {
         }
         for (int i = 0; i < triads.size(); i++) {
             System.out.println("t" + i + ": " + triads.get(i));
+        }
+    }
+
+    public static void optimizeConstants(){
+        for(int i = 0; i < triads.size(); i++){
+            // Если обнаружено вычисление константы
+            if(triads.get(i).getOp().getFirst().equals("OP") && triads.get(i).getA().getFirst().equals("NUMBER") &&
+                    triads.get(i).getB().getFirst().equals("NUMBER")){
+                // Вычисляем значение константы
+                String a = triads.get(i).getA().getSecond();
+                String b = triads.get(i).getB().getSecond();
+                String op = triads.get(i).getOp().getSecond();
+                String res = "0";
+                if(op.equals("+"))
+                    res = stringAddition(a, b);
+                else if(op.equals("-"))
+                    res = stringSubmission(a, b);
+                else if(op.equals("*"))
+                    res = stringMultiplication(a, b);
+                else if(op.equals("/"))
+                    res = stringDivision(a, b);
+
+                Pair<String, String> constant = new Pair("NUMBER", res);
+                // Заменяем триаду с вычислением константы на саму константу в других триадах
+                for(int j = 0; j < triads.size(); j++){
+                    if(triads.get(j).getOp().getFirst().equals("OP") || triads.get(j).getOp().getFirst().equals("ASSIGN_OP")){
+                        if(triads.get(j).getA() != null && triads.get(j).getA().getFirst().equals("TRIAD") && triads.get(j).getA().getSecond().equals(Integer.toString(i))){
+//                            triads.get(j).setA(constant);
+                            triads.set(j, new Triad(triads.get(j).getOp(), constant, triads.get(j).getB()));
+                        }
+                        if(triads.get(j).getB() != null && triads.get(j).getB().getFirst().equals("TRIAD") && triads.get(j).getB().getSecond().equals(Integer.toString(i))){
+//                            triads.get(j).setB(constant);
+                            triads.set(j, new Triad(triads.get(j).getOp(), triads.get(j).getA(), constant));
+                        }
+                    }
+                }
+                // Удаляем триаду с вычислением константы
+                triads.remove(i);
+                // Изменяем ссылки во всех триадах
+                fixReferences(i);
+                i--;
+            }
+        }
+        for (int i = 0; i < triads.size(); i++) {
+            System.out.println("t" + i + ": " + triads.get(i));
+        }
+    }
+
+    public static String stringAddition(String a, String b){
+        return Float.toString(Float.parseFloat(a) + Float.parseFloat(b));
+    }
+
+    public static String stringSubmission(String a, String b){
+        return Float.toString(Float.parseFloat(a) - Float.parseFloat(b));
+    }
+
+    public static String stringMultiplication(String a, String b){
+        return Float.toString(Float.parseFloat(a) * Float.parseFloat(b));
+    }
+
+    public static String stringDivision(String a, String b){
+        return Float.toString(Float.parseFloat(a) + Float.parseFloat(b));
+    }
+
+    public static void fixReferences(int deleted_index){
+        for(int i = 0; i < triads.size(); i++){
+            if(triads.get(i).getA() != null && triads.get(i).getA().getFirst().equals("TRIAD") &&
+                    Integer.parseInt(triads.get(i).getA().getSecond()) > deleted_index){
+//                triads.get(i).getA().setSecond(Integer.toString(Integer.parseInt(triads.get(i).getA().getSecond()) - 1));
+                triads.set(i, new Triad(triads.get(i).getOp(),
+                        new Pair("TRIAD", Integer.toString(Integer.parseInt(triads.get(i).getA().getSecond()) - 1)),
+                        triads.get(i).getB()));
+            }
+            if(triads.get(i).getB() != null && triads.get(i).getB().getFirst().equals("TRIAD") &&
+                    Integer.parseInt(triads.get(i).getB().getSecond()) > deleted_index){
+//                triads.get(i).getB().setSecond(Integer.toString(Integer.parseInt(triads.get(i).getB().getSecond()) - 1));
+                triads.set(i, new Triad(triads.get(i).getOp(), triads.get(i).getA(),
+                        new Pair("TRIAD", Integer.toString(Integer.parseInt(triads.get(i).getB().getSecond()) - 1))));
+            }
         }
     }
 }
