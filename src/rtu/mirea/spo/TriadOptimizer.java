@@ -71,9 +71,9 @@ public class TriadOptimizer {
         ArrayList<Pair<String, String>> new_rpn = generateRPN();
         System.out.println("NEW RPN");
         for (int i = 0; i < new_rpn.size(); i++) {
-            System.out.println(new_rpn.get(i));
+            System.out.println("p" + i + ": " + new_rpn.get(i));
         }
-        return tokens_copy;
+        return new_rpn;
     }
 
     public static void generateTriads(ArrayList<Pair<String, String>> tokens)
@@ -456,10 +456,10 @@ public class TriadOptimizer {
 
     public static ArrayList<Pair<String, String>> generateRPN(){
         ArrayList<Pair<String, Pair<String, String>>> marked_rpn = new ArrayList<>();
-
+        // Построение ПОЛИЗ без переопределения ссылок
         for(int i = 0; i < triads.size(); i++){
+            // Обработка присвоения переменной без объявления
             if(triads.get(i).getOp().getFirst().equals("ASSIGN_OP") && triads.get(i).getA().getFirst().equals("VAR")){
-//                continue;
                 int j = marked_rpn.size() - 1;
                 while(j > 0 && !marked_rpn.get(j-1).getSecond().getFirst().equals("SEP") &&
                         !marked_rpn.get(j).getSecond().getFirst().equals("SEP") &&
@@ -480,6 +480,7 @@ public class TriadOptimizer {
                     marked_rpn.add(new Pair(Integer.toString(i), new Pair(triads.get(i).getB())));
                 marked_rpn.add(new Pair(Integer.toString(i), new Pair(triads.get(i).getOp())));
             }
+            // Раскрытие триад
             else{
                 if(triads.get(i).getA() != null && (!triads.get(i).getA().getFirst().equals("TRIAD") ||
                         triads.get(i).getOp().getSecond().equals("!!"))){
@@ -492,6 +493,26 @@ public class TriadOptimizer {
                 marked_rpn.add(new Pair(Integer.toString(i), new Pair(triads.get(i).getOp())));
             }
         }
+
+        // Переопределение ссылок для переходов
+        for(int i = 0; i < marked_rpn.size(); i++){
+            if(marked_rpn.get(i).getSecond().getFirst().equals("TRIAD")){
+                for(int j = marked_rpn.size()-1; j >= 0; j--){
+                    if(marked_rpn.get(j).getFirst().equals(marked_rpn.get(i).getSecond().getSecond())){
+                        while(j > 0 && !marked_rpn.get(j-1).getSecond().getFirst().equals("SEP") &&
+//                                marked_rpn.get(j-1).getSecond().getSecond().getClass() instanceof String &&
+                                !marked_rpn.get(j-1).getSecond().getSecond().toString().equals("!!") &&
+                                !marked_rpn.get(j-1).getSecond().getSecond().toString().equals("!F") &&
+                                !marked_rpn.get(j-1).getSecond().getSecond().toString().equals("!T"))
+                            j--;
+                        marked_rpn.set(i, new Pair(marked_rpn.get(j).getFirst(), new Pair("NUMBER", Integer.toString(j))));
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Удаление ссылок на триады
         ArrayList<Pair<String, String>> result = new ArrayList<>();
         for(int i = 0; i < marked_rpn.size(); i++){
             result.add(marked_rpn.get(i).getSecond());
