@@ -16,8 +16,8 @@ import java.util.HashSet;
  * Цели оптимизаций триад
  * В t11 и t12 предвычислить константу и заменить на наё ссылку в t13
  * t19: предвычислить константу и заменить на неё ссылку в t20
- * Удалить переменую азъ: удалить триады t7 t8 t9 t48 t49 t50
- * Удалить переменную веди: удалить триады t15 t16 t17 t51 t52 t53
+ * Удалить переменую азъ: удалить триады t7 t8 t9 t45 t46 t47
+ * Удалить переменную веди: удалить триады t13 t14 t15 t48 t49 t50
  * Сделать важными по наследованию переменные с и глаг
  */
 
@@ -261,12 +261,9 @@ public class TriadOptimizer {
                 // Удаляем триаду с вычислением константы
                 triads.remove(i);
                 // Изменяем ссылки во всех триадах
-                fixReferences(i);
+                fixReferences(i, 1);
                 i--;
             }
-        }
-        for (int i = 0; i < triads.size(); i++) {
-            System.out.println("t" + i + ": " + triads.get(i));
         }
     }
 
@@ -397,6 +394,31 @@ public class TriadOptimizer {
         System.out.println("PRIORITY VARS");
         System.out.println(priority_vars);
 
+        for(int i = 0; i < triads.size(); i++){
+            if(triads.get(i).getA() != null && triads.get(i).getA().getFirst().equals("VAR") &&
+                    !priority_vars.contains(triads.get(i).getA().getSecond()) ||
+                    triads.get(i).getB() != null && triads.get(i).getB().getFirst().equals("VAR") &&
+                            !priority_vars.contains(triads.get(i).getB().getSecond())){
+                int upper_bound = i, lower_bound = i;
+                while(upper_bound-1 > 0 && !triads.get(upper_bound-1).getOp().getFirst().equals("SEP"))
+                    upper_bound--;
+                while(lower_bound < triads.size() && !triads.get(lower_bound).getOp().getFirst().equals("SEP"))
+                    lower_bound++;
+                int delete_count = lower_bound - upper_bound + 1;
+                for(int j = 0; j < delete_count; j++){
+                    triads.remove(upper_bound);
+                }
+                fixReferences(upper_bound, delete_count);
+                i = upper_bound - 1;
+            }
+        }
+
+        for (int i = 0; i < triads.size(); i++) {
+            System.out.println("t" + i + ": " + triads.get(i));
+        }
+
+
+
     }
 
     public static void inheritPriority(String current_var, HashSet<String> var_list){
@@ -424,20 +446,20 @@ public class TriadOptimizer {
 //        return false;
     }
 
-    public static void fixReferences(int deleted_index){
+    public static void fixReferences(int deleted_index, int triads_count){
         for(int i = 0; i < triads.size(); i++){
             if(triads.get(i).getA() != null && triads.get(i).getA().getFirst().equals("TRIAD") &&
                     Integer.parseInt(triads.get(i).getA().getSecond()) > deleted_index){
 //                triads.get(i).getA().setSecond(Integer.toString(Integer.parseInt(triads.get(i).getA().getSecond()) - 1));
                 triads.set(i, new Triad(triads.get(i).getOp(),
-                        new Pair("TRIAD", Integer.toString(Integer.parseInt(triads.get(i).getA().getSecond()) - 1)),
+                        new Pair("TRIAD", Integer.toString(Integer.parseInt(triads.get(i).getA().getSecond()) - triads_count)),
                         triads.get(i).getB()));
             }
             if(triads.get(i).getB() != null && triads.get(i).getB().getFirst().equals("TRIAD") &&
                     Integer.parseInt(triads.get(i).getB().getSecond()) > deleted_index){
 //                triads.get(i).getB().setSecond(Integer.toString(Integer.parseInt(triads.get(i).getB().getSecond()) - 1));
                 triads.set(i, new Triad(triads.get(i).getOp(), triads.get(i).getA(),
-                        new Pair("TRIAD", Integer.toString(Integer.parseInt(triads.get(i).getB().getSecond()) - 1))));
+                        new Pair("TRIAD", Integer.toString(Integer.parseInt(triads.get(i).getB().getSecond()) - triads_count))));
             }
         }
     }
