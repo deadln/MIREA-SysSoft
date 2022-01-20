@@ -62,6 +62,9 @@ public class TriadOptimizer {
         generateTriads(tokens);
         optimizeConstants();
         optimizeUnusedVars();
+        for (int i = 0; i < triads.size(); i++) {
+            System.out.println("t" + i + ": " + triads.get(i));
+        }
 
         return tokens_copy;
     }
@@ -85,9 +88,9 @@ public class TriadOptimizer {
         }
 
         for (int i = 0; i < tokens.size(); i++) {
-            if(delayed_reference.size() > 0){
-                System.out.println(delayed_reference);
-            }
+//            if(delayed_reference.size() > 0){
+//                System.out.println(delayed_reference);
+//            }
             // Элементы операций: значения и переменные
             if (tokens.get(i).getFirst().equals("NUMBER") || tokens.get(i).getFirst().equals("VAR")) {
                 stack.add(new Pair(i, new Pair(tokens.get(i))));
@@ -100,7 +103,7 @@ public class TriadOptimizer {
                 }
                 // типы данных, безусловный переход, вывод данных
                 else if (tokens.get(i).getFirst().equals("VAR_TYPE") || tokens.get(i).getSecond().equals("!!") ||
-                        tokens.get(i).getFirst().equals("PRINT_KW ")) {
+                        tokens.get(i).getFirst().equals("PRINT_KW")) {
                     Pair<Integer, Pair<String, String>> stack_elem = stack.remove(stack.size() - 1);
                     Pair<String, String> op1 = new Pair<>(stack_elem.getSecond());
                     // Переопределение ссылки перехода на триаду для безусловного перехода
@@ -220,9 +223,6 @@ public class TriadOptimizer {
             }
 
         }
-        for (int i = 0; i < triads.size(); i++) {
-            System.out.println("t" + i + ": " + triads.get(i));
-        }
     }
 
     public static void optimizeConstants(){
@@ -268,25 +268,27 @@ public class TriadOptimizer {
     }
 
     public static String stringAddition(String a, String b){
-        return Float.toString(Float.parseFloat(a) + Float.parseFloat(b));
+        return Integer.toString(Integer.parseInt(a) + Integer.parseInt(b));
     }
 
     public static String stringSubmission(String a, String b){
-        return Float.toString(Float.parseFloat(a) - Float.parseFloat(b));
+        return Integer.toString(Integer.parseInt(a) - Integer.parseInt(b));
     }
 
     public static String stringMultiplication(String a, String b){
-        return Float.toString(Float.parseFloat(a) * Float.parseFloat(b));
+        return Integer.toString(Integer.parseInt(a) * Integer.parseInt(b));
     }
 
     public static String stringDivision(String a, String b){
-        return Float.toString(Float.parseFloat(a) + Float.parseFloat(b));
+        return Integer.toString(Integer.parseInt(a) + Integer.parseInt(b));
     }
 
     public static void optimizeUnusedVars(){
         for(int i = 0; i < triads.size(); i++){
             triad_vars_belongings.put(i, new HashSet<>());
         }
+
+
 
         for(int i = 0; i < triads.size(); i++){
             // Если обнаруживаем объявление переменной
@@ -386,6 +388,8 @@ public class TriadOptimizer {
 
         }
 
+
+
         inheritPriority("", null);
 
         System.out.println("PARENTS");
@@ -413,9 +417,6 @@ public class TriadOptimizer {
             }
         }
 
-        for (int i = 0; i < triads.size(); i++) {
-            System.out.println("t" + i + ": " + triads.get(i));
-        }
 
 
 
