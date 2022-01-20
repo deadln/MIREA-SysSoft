@@ -38,6 +38,9 @@ public class TriadOptimizer {
     static HashMap<String, MyLinkedList<Integer>> list_vars;
     static HashMap<String, MyHashSet<Integer>> set_vars;
 
+    static HashMap<Integer, Integer> token_triad_belongings; // номер токена в восстановленном ПОЛИЗ : номер триады)
+    // Может стоит поначалу составлять полиз из элементов с привязанными ссылками на триады?
+
 
     public static void init() {
         triads = new ArrayList<>();
@@ -65,7 +68,11 @@ public class TriadOptimizer {
         for (int i = 0; i < triads.size(); i++) {
             System.out.println("t" + i + ": " + triads.get(i));
         }
-
+        ArrayList<Pair<String, String>> new_rpn = generateRPN();
+        System.out.println("NEW RPN");
+        for (int i = 0; i < new_rpn.size(); i++) {
+            System.out.println(new_rpn.get(i));
+        }
         return tokens_copy;
     }
 
@@ -404,7 +411,7 @@ public class TriadOptimizer {
                     triads.get(i).getB() != null && triads.get(i).getB().getFirst().equals("VAR") &&
                             !priority_vars.contains(triads.get(i).getB().getSecond())){
                 int upper_bound = i, lower_bound = i;
-                while(upper_bound-1 > 0 && !triads.get(upper_bound-1).getOp().getFirst().equals("SEP"))
+                while(upper_bound-1 >= 0 && !triads.get(upper_bound-1).getOp().getFirst().equals("SEP"))
                     upper_bound--;
                 while(lower_bound < triads.size() && !triads.get(lower_bound).getOp().getFirst().equals("SEP"))
                     lower_bound++;
@@ -445,6 +452,52 @@ public class TriadOptimizer {
             }
         }
 //        return false;
+    }
+
+    public static ArrayList<Pair<String, String>> generateRPN(){
+        ArrayList<Pair<String, Pair<String, String>>> marked_rpn = new ArrayList<>();
+
+        for(int i = 0; i < triads.size(); i++){
+            if(triads.get(i).getOp().getFirst().equals("ASSIGN_OP") && triads.get(i).getA().getFirst().equals("VAR")){
+//                continue;
+                int j = marked_rpn.size() - 1;
+                while(j > 0 && !marked_rpn.get(j-1).getSecond().getFirst().equals("SEP") &&
+                        !marked_rpn.get(j).getSecond().getFirst().equals("SEP") &&
+                        !marked_rpn.get(j-1).getSecond().getSecond().equals("!!") &&
+                        !marked_rpn.get(j).getSecond().getSecond().equals("!!") &&
+                        !marked_rpn.get(j-1).getSecond().getSecond().equals("!F") &&
+                        !marked_rpn.get(j).getSecond().getSecond().equals("!F") &&
+                        !marked_rpn.get(j-1).getSecond().getSecond().equals("!T") &&
+                        !marked_rpn.get(j).getSecond().getSecond().equals("!T"))
+                    j--;
+                if(marked_rpn.get(j).getSecond().getFirst().equals("SEP") ||
+                        marked_rpn.get(j).getSecond().getSecond().equals("!!") ||
+                        marked_rpn.get(j).getSecond().getSecond().equals("!F") ||
+                        marked_rpn.get(j).getSecond().getSecond().equals("!T"))
+                    j++;
+                marked_rpn.add(j, new Pair(Integer.toString(i), new Pair(triads.get(i).getA())));
+                if(!triads.get(i).getB().getFirst().equals("TRIAD"))
+                    marked_rpn.add(new Pair(Integer.toString(i), new Pair(triads.get(i).getB())));
+                marked_rpn.add(new Pair(Integer.toString(i), new Pair(triads.get(i).getOp())));
+            }
+            else{
+                if(triads.get(i).getA() != null && (!triads.get(i).getA().getFirst().equals("TRIAD") ||
+                        triads.get(i).getOp().getSecond().equals("!!"))){
+                    marked_rpn.add(new Pair(Integer.toString(i), new Pair(triads.get(i).getA())));
+                }
+                if(triads.get(i).getB() != null && (!triads.get(i).getB().getFirst().equals("TRIAD") ||
+                        triads.get(i).getOp().getSecond().equals("!F") || triads.get(i).getOp().getSecond().equals("!T"))){
+                    marked_rpn.add(new Pair(Integer.toString(i), new Pair(triads.get(i).getB())));
+                }
+                marked_rpn.add(new Pair(Integer.toString(i), new Pair(triads.get(i).getOp())));
+            }
+        }
+        ArrayList<Pair<String, String>> result = new ArrayList<>();
+        for(int i = 0; i < marked_rpn.size(); i++){
+            result.add(marked_rpn.get(i).getSecond());
+        }
+
+        return result;
     }
 
     public static void fixReferences(int deleted_index, int triads_count){
