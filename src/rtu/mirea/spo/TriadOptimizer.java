@@ -16,8 +16,8 @@ import java.util.HashSet;
  * Цели оптимизаций триад
  * В t11 и t12 предвычислить константу и заменить на наё ссылку в t13
  * t19: предвычислить константу и заменить на неё ссылку в t20
- * Удалить переменую азъ: удалить триады t7 t8 t9 t46 t47 t48
- * Удалить переменную веди: удалить триады t13 t14 t15 t49 t50 t51
+ * Удалить переменую азъ: удалить триады t7 t8 t9 t48 t49 t50
+ * Удалить переменную веди: удалить триады t15 t16 t17 t51 t52 t53
  */
 
 public class TriadOptimizer {
@@ -27,12 +27,28 @@ public class TriadOptimizer {
     static HashMap<Integer, Integer> triad_belongings; // Номер элемента в ПОЛИЗ : номер триады, к которой элемент принадлежит
     static HashMap<Integer, HashSet<Integer>> delayed_reference; // Номер элемента в ПОЛИЗ: номер триады, в которой нужно обновить ссылку
 
+    static HashMap<Integer, HashSet<String>> triad_vars_belongings; // Номер триады : переменные, которые в ней есть
+    static HashMap<String, HashSet<String>> vars_parents; // переменная : другие переменные, участвовавшие в её модификации
+    static HashMap<String, Integer> int_vars;
+    static HashMap<String, Float> float_vars;
+    static HashMap<String, Boolean> bool_vars;
+    static HashMap<String, MyLinkedList<Integer>> list_vars;
+    static HashMap<String, MyHashSet<Integer>> set_vars;
+
 
     public static void init() {
         triads = new ArrayList<>();
         stack = new ArrayList<>();
         triad_belongings = new HashMap<>();
         delayed_reference = new HashMap<>();
+
+        triad_vars_belongings = new HashMap<>();
+        vars_parents = new HashMap<>();
+        int_vars = new HashMap<>();
+        float_vars = new HashMap<>();
+        bool_vars = new HashMap<>();
+        list_vars = new HashMap<>();
+        set_vars = new HashMap<>();
     }
 
     public static ArrayList<Pair<String, String>> optimizeTriads(ArrayList<Pair<String, String>> tokens) {
@@ -40,6 +56,7 @@ public class TriadOptimizer {
         ArrayList<Pair<String, String>> tokens_copy = new ArrayList<>(tokens);
         generateTriads(tokens);
         optimizeConstants();
+        optimizeUnusedVars();
 
         return tokens_copy;
     }
@@ -262,6 +279,104 @@ public class TriadOptimizer {
 
     public static String stringDivision(String a, String b){
         return Float.toString(Float.parseFloat(a) + Float.parseFloat(b));
+    }
+
+    public static void optimizeUnusedVars(){
+        for(int i = 0; i < triads.size(); i++){
+            triad_vars_belongings.put(i, new HashSet<>());
+        }
+
+        for(int i = 0; i < triads.size(); i++){
+            // Если обнаруживаем объявление переменной
+            if(triads.get(i).getOp().getFirst().equals("VAR_TYPE")){
+                if(triads.get(i).getOp().getSecond().equals("целый"))
+                {
+                    int_vars.put(triads.get(i).getA().getSecond(), 0);
+                }
+                else if(triads.get(i).getOp().getSecond().equals("плавающий"))
+                {
+                    float_vars.put(triads.get(i).getA().getSecond(), 0.0f);
+                }
+                else if(triads.get(i).getOp().getSecond().equals("суть"))
+                {
+                    bool_vars.put(triads.get(i).getA().getSecond(), false);
+                }
+                else if(triads.get(i).getOp().getSecond().equals("испис"))
+                {
+                    list_vars.put(triads.get(i).getA().getSecond(), new MyLinkedList<Integer>());
+                }
+                else if(triads.get(i).getOp().getSecond().equals("замет"))
+                {
+                    set_vars.put(triads.get(i).getA().getSecond(), new MyHashSet<Integer>());
+                }
+            }
+            else if(triads.get(i).getOp().getFirst().equals("OP")){
+                if(triads.get(i).getA() != null && triads.get(i).getA().getFirst().equals("VAR")){
+                    if(!triad_vars_belongings.containsKey(i)){
+                        triad_vars_belongings.put(i, new HashSet<>());
+                    }
+                    triad_vars_belongings.get(i).add(triads.get(i).getA().getSecond());
+                }
+                if(triads.get(i).getB() != null && triads.get(i).getB().getFirst().equals("VAR")){
+                    if(!triad_vars_belongings.containsKey(i)){
+                        triad_vars_belongings.put(i, new HashSet<>());
+                    }
+                    triad_vars_belongings.get(i).add(triads.get(i).getB().getSecond());
+                }
+
+                if(triads.get(i).getA() != null && triads.get(i).getA().getFirst().equals("TRIAD")){
+                    if(!triad_vars_belongings.containsKey(i)){
+                        triad_vars_belongings.put(i, new HashSet<>());
+                    }
+//                    triad_vars_belongings.get(i).add(triads.get(i).getA().getSecond());
+                    if(triad_vars_belongings.containsKey(Integer.parseInt(triads.get(i).getA().getSecond())));{
+                        triad_vars_belongings.get(i).addAll(triad_vars_belongings.get(Integer.parseInt(triads.get(i).getA().getSecond())));
+                    }
+                }
+                if(triads.get(i).getB() != null && triads.get(i).getB().getFirst().equals("TRIAD")){
+                    if(!triad_vars_belongings.containsKey(i)){
+                        triad_vars_belongings.put(i, new HashSet<>());
+                    }
+//                    triad_vars_belongings.get(i).add(triads.get(i).getA().getSecond());
+                    if(triad_vars_belongings.containsKey(Integer.parseInt(triads.get(i).getB().getSecond())));{
+                        triad_vars_belongings.get(i).addAll(triad_vars_belongings.get(Integer.parseInt(triads.get(i).getB().getSecond())));
+                    }
+                }
+
+            }
+            else if(triads.get(i).getOp().getFirst().equals("ASSIGN_OP")){
+//                System.out.println(Integer.parseInt(triads.get(i).getA().getSecond()));
+                String variable;
+                if(triads.get(i).getA().getFirst().equals("TRIAD")){
+                    variable = triads.get(Integer.parseInt(triads.get(i).getA().getSecond())).getA().getSecond();
+                }
+                else{
+                    variable = triads.get(i).getA().getSecond();
+                }
+
+                // ДОРАБОТАТЬ РЕКУРСИВНЫЙ СБОР РОДИТЕЛЕЙ
+                HashSet<String> parents;
+                if(triads.get(i).getB().getFirst().equals("TRIAD") && triad_vars_belongings.containsKey(Integer.parseInt(triads.get(i).getB().getSecond()))){
+                    parents = triad_vars_belongings.get(Integer.parseInt(triads.get(i).getB().getSecond()));
+                }
+                else if (triads.get(i).getB().getFirst().equals("VAR") && vars_parents.containsKey(triads.get(i).getB().getSecond())){
+                    parents = vars_parents.get(triads.get(i).getB().getSecond());
+                }
+                else{
+                    parents = new HashSet<>();
+                }
+                // ДОРАБОТАТЬ РЕКУРСИВНЫЙ СБОР РОДИТЕЛЕЙ
+                if(!vars_parents.containsKey(variable))
+                    vars_parents.put(variable, parents);
+                else
+                    vars_parents.get(variable).addAll(parents);
+            }
+
+
+        }
+        System.out.println("PARENTS");
+        System.out.println(vars_parents);
+
     }
 
     public static void fixReferences(int deleted_index){
