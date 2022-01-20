@@ -18,6 +18,7 @@ import java.util.HashSet;
  * t19: предвычислить константу и заменить на неё ссылку в t20
  * Удалить переменую азъ: удалить триады t7 t8 t9 t48 t49 t50
  * Удалить переменную веди: удалить триады t15 t16 t17 t51 t52 t53
+ * Сделать важными по наследованию переменные с и глаг
  */
 
 public class TriadOptimizer {
@@ -29,6 +30,8 @@ public class TriadOptimizer {
 
     static HashMap<Integer, HashSet<String>> triad_vars_belongings; // Номер триады : переменные, которые в ней есть
     static HashMap<String, HashSet<String>> vars_parents; // переменная : другие переменные, участвовавшие в её модификации
+    static HashSet<String> priority_vars;
+
     static HashMap<String, Integer> int_vars;
     static HashMap<String, Float> float_vars;
     static HashMap<String, Boolean> bool_vars;
@@ -44,6 +47,8 @@ public class TriadOptimizer {
 
         triad_vars_belongings = new HashMap<>();
         vars_parents = new HashMap<>();
+        priority_vars = new HashSet<>();
+
         int_vars = new HashMap<>();
         float_vars = new HashMap<>();
         bool_vars = new HashMap<>();
@@ -372,11 +377,51 @@ public class TriadOptimizer {
                     vars_parents.get(variable).addAll(parents);
             }
 
+            else if(triads.get(i).getOp().getFirst().equals("LOGICAL_OP") || triads.get(i).getOp().getFirst().equals("PRINT_KW")){
+                if(triads.get(i).getA() != null && triads.get(i).getA().getFirst().equals("VAR")){
+                    priority_vars.add(triads.get(i).getA().getSecond());
+                }
+                if(triads.get(i).getB() != null && triads.get(i).getB().getFirst().equals("VAR")){
+                    priority_vars.add(triads.get(i).getB().getSecond());
+                }
+            }
+
 
         }
+
+        inheritPriority("", null);
+
         System.out.println("PARENTS");
         System.out.println(vars_parents);
 
+        System.out.println("PRIORITY VARS");
+        System.out.println(priority_vars);
+
+    }
+
+    public static void inheritPriority(String current_var, HashSet<String> var_list){
+//        if(priority_vars.contains(current_var))
+//            return true;
+//        parents;
+        if(var_list == null){
+            ArrayList<String> parents = new ArrayList<>(priority_vars);
+            for(int i = 0; i < parents.size(); i++){
+                priority_vars.add(parents.get(i));
+                if(!parents.get(i).equals(current_var)){
+                    inheritPriority(parents.get(i), vars_parents.get(parents.get(i)));
+                }
+            }
+        }
+        else{
+            HashSet<String> parents = var_list;
+            for(var variable : parents){
+                priority_vars.add(variable);
+                if(!variable.equals(current_var)){
+                    inheritPriority(variable, vars_parents.get(variable));
+                }
+            }
+        }
+//        return false;
     }
 
     public static void fixReferences(int deleted_index){
