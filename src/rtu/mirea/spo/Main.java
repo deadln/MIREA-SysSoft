@@ -51,15 +51,18 @@ public class Main {
         tree.showTree();
         System.out.println("*********************************ПРЕОБРАЗОВАНИЕ ДЕРЕВА В ПОЛИЗ********************************");
          ArrayList<Pair<String, String>> rpn = RPN.getRPN(tree);
-//        ArrayList<Pair<String, String>> rpn = RPN.getRPN(tokens);
         System.out.println("ПОЛИЗ:");
-        System.out.println(rpn.toString());
         System.out.println(rpn.size());
+        for (int i = 0; i < rpn.size(); i++) {
+            System.out.println("p" + i + ": " + rpn.get(i));
+        }
         System.out.println("******************************ОПТИМИЗАЦИЯ ПОЛИЗА С ПОМОЩЬЮ ТРИАД******************************");
         rpn = TriadOptimizer.optimizeTriads(rpn);
         System.out.println("ОПТИМИЗИРОВАННЫЙ ПОЛИЗ:");
-        System.out.println(rpn.toString());
         System.out.println(rpn.size());
+        for (int i = 0; i < rpn.size(); i++) {
+            System.out.println("p" + i + ": " + rpn.get(i));
+        }
         System.out.println("****************************************РАБОТА СТЕК-МАШИНЫ************************************");
         StackMachine.execute(rpn);
 

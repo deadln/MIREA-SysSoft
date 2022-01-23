@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 public class TreeOptimizer {
     public static LexTree optimizeTree(LexTree tree){
-//        LexTree optimizedTree = new LexTree(treeTraversal(tree.getRoot()));
         tree = new LexTree(treeTraversal(tree.getRoot()));
         return tree;
     }
@@ -34,7 +33,6 @@ public class TreeOptimizer {
                     if(node.getChildren().get(i) == null) {
                         node.getChildren().remove(i);
                         i--;
-                        System.out.println("UPDATE\n" + node.getChildren().toString());
                         return null;
                     }
                 }
@@ -44,19 +42,9 @@ public class TreeOptimizer {
                     if(node.getChildren().get(i) == null) {
                         node.getChildren().remove(i);
                         i--;
-                        System.out.println("UPDATE\n" + node.getChildren().toString());
                         return null;
                     }
                 }
-//                else if(node.getChildren().get(i).getLabel().getFirst().equals("do_while_expr")){
-//                    node.getChildren().set(i, optimizeDoWhile(node.getChildren().get(i)));
-//                    if(node.getChildren().get(i) == null) {
-//                        node.getChildren().remove(i);
-//                        i--;
-//                        System.out.println("UPDATE\n" + node.getChildren().toString());
-//                        return null;
-//                    }
-//                }
                 else{
                     LexNode subNode = treeTraversal(node.getChildren().get(i));
                     if(subNode == null) {
@@ -65,10 +53,6 @@ public class TreeOptimizer {
                     }
                 }
             }
-            /*for (LexNode child :
-                    node.getChildren()) {
-                res.addAll(treeToList(child));
-            }*/
         }
         return node;
     }
@@ -81,13 +65,10 @@ public class TreeOptimizer {
                 if(expr.getChildren().get(3).getChildren().size() < 3){ // пустой else
                     System.out.println("\t\tEMPTY ELSE");
                     return null;
-//                    expr = null;
-//                    System.out.println("BEFORE\n" + expr.getChildren().toString());
                 }
             }
             else { // нет else
                 return null;
-//                expr = null;
             }
         }
         else if(expr.getChildren().size() > 2 && expr.getChildren().get(3).getChildren().size() < 3){ // пустой else

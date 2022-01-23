@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RPN {
-    //static ArrayList<Pair<String, String>> tokens;
     static HashMap<String, Integer> opPriority;
 
     static void initOperatorPriorities()
@@ -110,20 +109,11 @@ public class RPN {
     public static ArrayList<Pair<String, String>> getRPN(LexTree tree) {
 
         ArrayList<Pair<String, String>> tokens = treeToList(tree.getRoot());
-        /*System.out.println("**************");
-        System.out.println("СПИСОК ТОКЕНОВ ИЗ ДЕРЕВА");
-        System.out.println("**************");
-        for (var token:
-                tokens) {
-            System.out.print(token.getFirst() + "|" + token.getSecond() + "\n");
-        }*/
 
         ArrayList<Pair<String, String>> rpn = new ArrayList<>();
 
 
         initOperatorPriorities();
-        System.out.println("Original expressions");
-        System.out.println(tokens.toString());
         int i = 0, j, start, end;
         Pair<String, String> token;
         while(i < tokens.size())
@@ -144,9 +134,6 @@ public class RPN {
                 while(expression_end < tokens.size() && !tokens.get(expression_end).getFirst().equals("R_S_BR"))
                     expression_end++;
                 if_body = toRPN(new ArrayList<>(tokens.subList(expression_start, expression_end)));
-//                // Добавление перехода за пределы тела if
-//                rpn.add(new Pair<String, String>("NUMBER", Integer.toString(rpn.size() + if_body.size() + 4)));
-//                rpn.add(new Pair<String, String>("OP", "!F"));
                 if(tokens.size() > expression_end + 1 && tokens.get(expression_end + 1).getFirst().equals("ELSE_KW"))
                 {
                     if(tokens.size() > expression_end + 2 && tokens.get(expression_end + 2).getFirst().equals("IF_KW"))

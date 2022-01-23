@@ -27,8 +27,6 @@ public class StackMachine {
 
     public static void execute(ArrayList<Pair<String, String>> tokens) {
         init();
-        System.out.println(tokens);
-        System.out.println(tokens.size());
         Pair<String, String> token;
         for(int i = 0; i < tokens.size(); i++)
         {
@@ -254,17 +252,6 @@ public class StackMachine {
                 stack.clear();
             }
         }
-        /*System.out.println("Переменные:");
-        if(int_vars.size() > 0)
-            System.out.println(int_vars.toString());
-        if(float_vars.size() > 0)
-            System.out.println(float_vars.toString());
-        if(bool_vars.size() > 0)
-            System.out.println(bool_vars.toString());
-        if(list_vars.size() > 0)
-            System.out.println(list_vars.toString());
-        if(set_vars.size() > 0)
-            System.out.println(set_vars.toString());*/
 
     }
 

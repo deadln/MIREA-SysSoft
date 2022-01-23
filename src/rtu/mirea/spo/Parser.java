@@ -9,23 +9,6 @@ import java.util.ArrayList;
 public class Parser {
     static ArrayList<Pair<String, String>> tokens;
 
-    /*public static ArrayList<Pair<String, String>> getRPN(ArrayList<Pair<String, String>> tokens_list) {
-        tokens = new ArrayList<>(tokens_list);
-
-        try {
-            LexTree tree = lang();
-            System.out.println("--------------------------------");
-            System.out.println("TREE");
-            System.out.println("--------------------------------");
-            tree.showTree();
-            return RPN.getRPN(tokens_list);
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
-
-    }*/
 
     public static LexTree getSyntaxTree(ArrayList<Pair<String, String>> tokens_list){
         tokens = new ArrayList<>(tokens_list);
@@ -110,7 +93,6 @@ public class Parser {
 
     public static LexNode expr(ArrayList<Pair<String, String>> tokens_list)
     {
-        System.out.println(tokens_list.toString());
         LexNode expression, parent = new LexNode(new Pair<>("expr", ""));
         expression = declaring_expr(tokens_list);
         if(expression != null)

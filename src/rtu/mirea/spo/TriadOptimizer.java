@@ -63,16 +63,17 @@ public class TriadOptimizer {
         init();
         ArrayList<Pair<String, String>> tokens_copy = new ArrayList<>(tokens);
         generateTriads(tokens);
+        System.out.println("ТРИАДЫ:");
+        for (int i = 0; i < triads.size(); i++) {
+            System.out.println("t" + i + ": " + triads.get(i));
+        }
         optimizeConstants();
         optimizeUnusedVars();
+        System.out.println("ОПТИМИЗИРОВАННЫЕ ТРИАДЫ:");
         for (int i = 0; i < triads.size(); i++) {
             System.out.println("t" + i + ": " + triads.get(i));
         }
         ArrayList<Pair<String, String>> new_rpn = generateRPN();
-        System.out.println("NEW RPN");
-        for (int i = 0; i < new_rpn.size(); i++) {
-            System.out.println("p" + i + ": " + new_rpn.get(i));
-        }
         return new_rpn;
     }
 
@@ -95,9 +96,6 @@ public class TriadOptimizer {
         }
 
         for (int i = 0; i < tokens.size(); i++) {
-//            if(delayed_reference.size() > 0){
-//                System.out.println(delayed_reference);
-//            }
             // Элементы операций: значения и переменные
             if (tokens.get(i).getFirst().equals("NUMBER") || tokens.get(i).getFirst().equals("VAR")) {
                 stack.add(new Pair(i, new Pair(tokens.get(i))));
@@ -256,11 +254,9 @@ public class TriadOptimizer {
                 for(int j = 0; j < triads.size(); j++){
                     if(triads.get(j).getOp().getFirst().equals("OP") || triads.get(j).getOp().getFirst().equals("ASSIGN_OP")){
                         if(triads.get(j).getA() != null && triads.get(j).getA().getFirst().equals("TRIAD") && triads.get(j).getA().getSecond().equals(Integer.toString(i))){
-//                            triads.get(j).setA(constant);
                             triads.set(j, new Triad(triads.get(j).getOp(), constant, triads.get(j).getB()));
                         }
                         if(triads.get(j).getB() != null && triads.get(j).getB().getFirst().equals("TRIAD") && triads.get(j).getB().getSecond().equals(Integer.toString(i))){
-//                            triads.get(j).setB(constant);
                             triads.set(j, new Triad(triads.get(j).getOp(), triads.get(j).getA(), constant));
                         }
                     }
@@ -339,7 +335,6 @@ public class TriadOptimizer {
                     if(!triad_vars_belongings.containsKey(i)){
                         triad_vars_belongings.put(i, new HashSet<>());
                     }
-//                    triad_vars_belongings.get(i).add(triads.get(i).getA().getSecond());
                     if(triad_vars_belongings.containsKey(Integer.parseInt(triads.get(i).getA().getSecond())));{
                         triad_vars_belongings.get(i).addAll(triad_vars_belongings.get(Integer.parseInt(triads.get(i).getA().getSecond())));
                     }
@@ -348,7 +343,6 @@ public class TriadOptimizer {
                     if(!triad_vars_belongings.containsKey(i)){
                         triad_vars_belongings.put(i, new HashSet<>());
                     }
-//                    triad_vars_belongings.get(i).add(triads.get(i).getA().getSecond());
                     if(triad_vars_belongings.containsKey(Integer.parseInt(triads.get(i).getB().getSecond())));{
                         triad_vars_belongings.get(i).addAll(triad_vars_belongings.get(Integer.parseInt(triads.get(i).getB().getSecond())));
                     }
@@ -356,7 +350,6 @@ public class TriadOptimizer {
 
             }
             else if(triads.get(i).getOp().getFirst().equals("ASSIGN_OP")){
-//                System.out.println(Integer.parseInt(triads.get(i).getA().getSecond()));
                 String variable;
                 if(triads.get(i).getA().getFirst().equals("TRIAD")){
                     variable = triads.get(Integer.parseInt(triads.get(i).getA().getSecond())).getA().getSecond();
@@ -365,7 +358,6 @@ public class TriadOptimizer {
                     variable = triads.get(i).getA().getSecond();
                 }
 
-                // ДОРАБОТАТЬ РЕКУРСИВНЫЙ СБОР РОДИТЕЛЕЙ
                 HashSet<String> parents;
                 if(triads.get(i).getB().getFirst().equals("TRIAD") && triad_vars_belongings.containsKey(Integer.parseInt(triads.get(i).getB().getSecond()))){
                     parents = triad_vars_belongings.get(Integer.parseInt(triads.get(i).getB().getSecond()));
@@ -376,7 +368,6 @@ public class TriadOptimizer {
                 else{
                     parents = new HashSet<>();
                 }
-                // ДОРАБОТАТЬ РЕКУРСИВНЫЙ СБОР РОДИТЕЛЕЙ
                 if(!vars_parents.containsKey(variable))
                     vars_parents.put(variable, parents);
                 else
@@ -399,10 +390,10 @@ public class TriadOptimizer {
 
         inheritPriority("", null);
 
-        System.out.println("PARENTS");
+        System.out.println("ПРАРОДИТЕЛИ ПЕРЕМЕННЫХ");
         System.out.println(vars_parents);
 
-        System.out.println("PRIORITY VARS");
+        System.out.println("ПРИОРИТЕТНЫЕ ПЕРЕМЕННЫЕ");
         System.out.println(priority_vars);
 
         for(int i = 0; i < triads.size(); i++){
@@ -430,9 +421,6 @@ public class TriadOptimizer {
     }
 
     public static void inheritPriority(String current_var, HashSet<String> var_list){
-//        if(priority_vars.contains(current_var))
-//            return true;
-//        parents;
         if(var_list == null){
             ArrayList<String> parents = new ArrayList<>(priority_vars);
             for(int i = 0; i < parents.size(); i++){
@@ -451,7 +439,6 @@ public class TriadOptimizer {
                 }
             }
         }
-//        return false;
     }
 
     public static ArrayList<Pair<String, String>> generateRPN(){
@@ -500,7 +487,6 @@ public class TriadOptimizer {
                 for(int j = marked_rpn.size()-1; j >= 0; j--){
                     if(marked_rpn.get(j).getFirst().equals(marked_rpn.get(i).getSecond().getSecond())){
                         while(j > 0 && !marked_rpn.get(j-1).getSecond().getFirst().equals("SEP") &&
-//                                marked_rpn.get(j-1).getSecond().getSecond().getClass() instanceof String &&
                                 !marked_rpn.get(j-1).getSecond().getSecond().toString().equals("!!") &&
                                 !marked_rpn.get(j-1).getSecond().getSecond().toString().equals("!F") &&
                                 !marked_rpn.get(j-1).getSecond().getSecond().toString().equals("!T"))
@@ -525,14 +511,12 @@ public class TriadOptimizer {
         for(int i = 0; i < triads.size(); i++){
             if(triads.get(i).getA() != null && triads.get(i).getA().getFirst().equals("TRIAD") &&
                     Integer.parseInt(triads.get(i).getA().getSecond()) > deleted_index){
-//                triads.get(i).getA().setSecond(Integer.toString(Integer.parseInt(triads.get(i).getA().getSecond()) - 1));
                 triads.set(i, new Triad(triads.get(i).getOp(),
                         new Pair("TRIAD", Integer.toString(Integer.parseInt(triads.get(i).getA().getSecond()) - triads_count)),
                         triads.get(i).getB()));
             }
             if(triads.get(i).getB() != null && triads.get(i).getB().getFirst().equals("TRIAD") &&
                     Integer.parseInt(triads.get(i).getB().getSecond()) > deleted_index){
-//                triads.get(i).getB().setSecond(Integer.toString(Integer.parseInt(triads.get(i).getB().getSecond()) - 1));
                 triads.set(i, new Triad(triads.get(i).getOp(), triads.get(i).getA(),
                         new Pair("TRIAD", Integer.toString(Integer.parseInt(triads.get(i).getB().getSecond()) - triads_count))));
             }

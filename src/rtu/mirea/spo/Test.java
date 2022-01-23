@@ -6,15 +6,12 @@ import java.util.HashSet;
 
 public class Test {
     public static void main(String[] args) {
-        String a = "2";
-        String b = "6";
-        System.out.println(stringAddition(a,b));
+        Pair<String, String> pair1 = new Pair<>("if", "else");
+        Pair<String, String> pair2 = new Pair<>("if", "else");
+        HashMap<Pair<String, String>, String> mp = new HashMap<>();
+        mp.put(pair1, "1");
+        System.out.println(mp.containsKey(pair2));
 
-//        Pair<String, String> pair1 = new Pair<>("if", "else");
-//        Pair<String, String> pair2 = new Pair<>(pair1);
-//        pair1.setFirst("elif");
-//        System.out.println(pair1);
-//        System.out.println(pair2);
 
     }
 
